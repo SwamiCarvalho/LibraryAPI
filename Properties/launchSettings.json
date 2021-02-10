@@ -21,10 +21,20 @@
       "commandName": "Project",
       "dotnetRunMessages": "true",
       "launchBrowser": true,
-      "launchUrl": "api/Book",
+      "launchUrl": "swagger",
       "applicationUrl": "https://localhost:5001;http://localhost:5000",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "LibraryAPI": {
+        "commandName": "GetBooks",
+        "dotnetRunMessages": "true",
+        "launchBrowser": true,
+        "launchUrl": "api/Books",
+        "applicationUrl": "https://localhost:5001;http://localhost:5000",
+        "environmentVariables": {
+          "ASPNETCORE_ENVIRONMENT": "Development"
+        }
       }
     }
   }

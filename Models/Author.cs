@@ -10,7 +10,6 @@ namespace LibraryAPI.Models
         public long Id { get; set; }
         [Required]
         public string FirstName { get; set; }
-        [Required]
         public string LastName { get; set; }
         public virtual ICollection<Book> Books { get; set; }
 

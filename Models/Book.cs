@@ -21,8 +21,7 @@ namespace LibraryAPI.Models
         [DisplayName("Original Title")]
         public string OgTitle { get; set; }
         [Required]
-        public string PublicationYear { get; set; }
-        [Required]
+        public int PublicationYear { get; set; }
         public int Edition { get; set; }
         public string Notes { get; set; }
         public string PhysicalDescription { get; set; }
@@ -30,8 +29,8 @@ namespace LibraryAPI.Models
 
         // Foreign Key
         [Required]
-        [ForeignKey("Publisher")]
-        public int PublisherId { get; set; }
+        [ForeignKey("PublisherId")]
+        public long PublisherId { get; set; }
         // Navigation Property
         public virtual Publisher Publisher { get; set; }
 

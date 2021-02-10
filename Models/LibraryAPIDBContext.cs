@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace LibraryAPI.Models
 {
-    public class APILibraryContext : DbContext
+    public class LibraryAPIDBContext : DbContext
     {
-        public APILibraryContext(DbContextOptions<APILibraryContext> options)
+        public LibraryAPIDBContext(DbContextOptions<LibraryAPIDBContext> options)
             : base(options)
         {
         }
