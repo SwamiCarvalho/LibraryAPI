@@ -30,6 +30,7 @@ namespace LibraryAPI
         {
             services.AddDbContext<LibraryAPIDBContext>(options =>
                                                 options.UseSqlServer(Configuration["ConnectionString:LibraryAPIDB"]));
+
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {

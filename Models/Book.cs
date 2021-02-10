@@ -8,11 +8,6 @@ namespace LibraryAPI.Models
 {
     public class Book
     {
-        public Book() 
-        { 
-            this.Genres = new HashSet<Genre>();
-            this.Authors = new HashSet<Author>();
-        }
 
         [Key]
         public long Id { get; set; }
@@ -33,9 +28,9 @@ namespace LibraryAPI.Models
         public long PublisherId { get; set; }
         // Navigation Property
         public virtual Publisher Publisher { get; set; }
+        public virtual ICollection<BooksAuthors> BooksAuthors { get; set; }
+        public virtual ICollection<BooksGenres> BooksGenres { get; set; }
 
-        public virtual ICollection<Genre> Genres { get; set; }
-        public virtual ICollection<Author> Authors { get; set; }
 
 
 

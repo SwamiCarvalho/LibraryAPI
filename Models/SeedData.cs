@@ -63,55 +63,68 @@ namespace LibraryAPI.Models
 
 
                 ////////////////// BOOKS //////////////////////
-                
+
                 // Look for any Books.
                 if (context.Books.Any())
                 {
                     return;   // DB has been seeded
                 }
 
+
                 // Seed Books Table
-                var blinkBook = new Book
+                var books = new Book[]
                 {
+                    new Book{
                     Title = "Decidir num piscar de olhos",
                     OgTitle = "Blink!",
                     PublicationYear = 2009,
                     Edition = 4,
                     PhysicalDescription = "263 p. ; 24 cm",
-                    PublisherId = 1,
-                    Genres = new List<Genre>(),
-                    Authors = new List<Author>()
-                };
-                blinkBook.Genres.Add(intuition);
-                blinkBook.Authors.Add(gladwell);
+                    PublisherId = 1
+                    },
 
-                var intuitionBook = new Book
-                {
+                    new Book{
                     Title = "Intuição",
                     OgTitle = "Intuition: knowing beyond logic",
                     PublicationYear = 2006,
                     PhysicalDescription = "196 p. ; 22 cm",
-                    PublisherId = 2,
-                    Genres = new List<Genre>(),
-                    Authors = new List<Author>()
-                };
-                intuitionBook.Genres.Add(personalDevelopment);
-                intuitionBook.Genres.Add(creativity);
-                intuitionBook.Authors.Add(osho);
+                    PublisherId = 2
+                    },
 
-                var creativityBook = new Book
-                {
+                    new Book{
                     Title = "Criatividade : libertar as forças interiores",
                     PublicationYear = 2006,
                     PhysicalDescription = "196 p. ; 22 cm",
-                    PublisherId = 2,
-                    Genres = new List<Genre>(),
-                    Authors = new List<Author>()
+                    PublisherId = 2
+                    }
                 };
-                creativityBook.Genres.Add(creativity);
-                creativityBook.Authors.Add(osho);
+                
+                foreach( Book book in books)
+                {
+                    context.Books.Add(book);
+                }
+                context.SaveChanges();
 
-                context.Books.AddRange(blinkBook, intuitionBook, creativityBook );
+                ////////// SEED AuthorBook /////////////
+
+                var booksauthors = new BooksAuthors[]
+                {
+                    new BooksAuthors { BookId = 1, AuthorId = 1 },
+                    new BooksAuthors { BookId = 2, AuthorId = 2 },
+                    new BooksAuthors { BookId = 3, AuthorId = 2 }
+                };
+                    
+
+                context.SaveChanges();
+
+                ////////// SEED BookGenre /////////////
+
+                context.BooksGenres.AddRange(
+                    new BooksGenres { BookId = 1, GenreId = 1 },
+                    new BooksGenres { BookId = 2, GenreId = 2 },
+                    new BooksGenres { BookId = 2, GenreId = 3 },
+                    new BooksGenres { BookId = 3, GenreId = 3 });
+
                 context.SaveChanges();
             }
         }
