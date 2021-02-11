@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using LibraryAPI.Models;
+using LibraryAPI.Data;
 
 namespace LibraryAPI.Controllers
 {

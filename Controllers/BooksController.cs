@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using LibraryAPI.Data;
 using LibraryAPI.Models;
 
 namespace LibraryAPI.Controllers

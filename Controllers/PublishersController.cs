@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using LibraryAPI.Models;
+using LibraryAPI.Data;
 
 namespace LibraryAPI.Controllers
 {
@@ -80,7 +81,7 @@ namespace LibraryAPI.Controllers
             _context.Publishers.Add(publisher);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetPublisher", new { id = publisher.Id }, publisher);
+            return CreatedAtAction("GetPublisher", new { id = publisher.Id, name = publisher.Name, location = publisher.Location }, publisher);
         }
 
         // DELETE: api/Publishers/5

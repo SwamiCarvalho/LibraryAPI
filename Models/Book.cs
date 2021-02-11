@@ -8,24 +8,19 @@ namespace LibraryAPI.Models
 {
     public class Book
     {
-
-        [Key]
         public long Id { get; set; }
         [Required]
         public string Title { get; set; }
         [DisplayName("Original Title")]
-        public string OgTitle { get; set; }
+        public string? OgTitle { get; set; }
         [Required]
         public int PublicationYear { get; set; }
-        public int Edition { get; set; }
-        public string Notes { get; set; }
-        public string PhysicalDescription { get; set; }
+        public int? Edition { get; set; }
+        public string? Notes { get; set; }
+        public string? PhysicalDescription { get; set; }
 
-
-        // Foreign Key
-        [Required]
         [ForeignKey("PublisherId")]
-        public long PublisherId { get; set; }
+        public long? PublisherId { get; set; }
         // Navigation Property
         public virtual Publisher Publisher { get; set; }
         public virtual ICollection<BooksAuthors> BooksAuthors { get; set; }
