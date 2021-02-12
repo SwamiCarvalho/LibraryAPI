@@ -14,23 +14,31 @@ namespace MvcMovie
         {
             var host = CreateHostBuilder(args).Build();
 
+            // If Data Model changes, delete database and update seed method, starting fresh with a new database
+            CreateDbIfNotExists(host);
+
+            host.Run();
+
+        }
+
+        private static void CreateDbIfNotExists(IHost host)
+        {
             using (var scope = host.Services.CreateScope())
             {
                 var services = scope.ServiceProvider;
-
                 try
                 {
-                    SeedData.Initialize(services);
+                    // Get a database context instance from the dependency injection container.
+                    var context = services.GetRequiredService<LibraryAPIDBContext>();
+                    // Call the SeedData.Initialize method to seed Database
+                    SeedData.Initialize(context);
                 }
                 catch (Exception ex)
                 {
                     var logger = services.GetRequiredService<ILogger<Program>>();
-                    logger.LogError(ex, "An error occurred seeding the DB.");
+                    logger.LogError(ex, "An error occurred creating the DB.");
                 }
             }
-
-            host.Run();
-
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>

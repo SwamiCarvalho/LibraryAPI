@@ -26,12 +26,5 @@ namespace LibraryAPI.Models
         public virtual ICollection<BooksAuthors> BooksAuthors { get; set; }
         public virtual ICollection<BooksGenres> BooksGenres { get; set; }
 
-
-
-
-
-
-
-
     }
 }
