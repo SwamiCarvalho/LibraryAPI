@@ -2,7 +2,7 @@
 
 namespace LibraryAPI.Migrations
 {
-    public partial class Initial : Migration
+    public partial class ComplexDataModel : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

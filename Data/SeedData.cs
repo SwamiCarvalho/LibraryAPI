@@ -24,8 +24,8 @@ namespace LibraryAPI.Data
             // Seed Publisher Table
             var publishers = new Publisher[]
             {
-                new Publisher() { Name = "Dom Quixote", Location = "Alfragide" },
-                new Publisher() { Name = "Sábado", Location = "Lisboa" }
+                new Publisher { Name = "Dom Quixote", Location = "Alfragide" },
+                new Publisher { Name = "Sábado", Location = "Lisboa" }
             };
 
             foreach (Publisher publisher in publishers)
@@ -44,8 +44,8 @@ namespace LibraryAPI.Data
             }
 
             // Seed Authors Table
-            var gladwell = new Author() { FirstName = "Malcom", LastName = "Gladwell" };
-            var osho = new Author() { FirstName = "Osho" };
+            var gladwell = new Author { FirstName = "Malcom", LastName = "Gladwell" };
+            var osho = new Author { FirstName = "Osho" };
             context.Authors.AddRange(gladwell, osho);
             context.SaveChanges();
 
@@ -58,9 +58,9 @@ namespace LibraryAPI.Data
             }
 
             // Seed Genres Table
-            var intuition = new Genre() { Name = "Intuição" };
-            var personalDevelopment = new Genre() { Name = "Desenvolvimento Pessoal" };
-            var creativity = new Genre() { Name = "Criatividade" };
+            var intuition = new Genre { Name = "Intuição" };
+            var personalDevelopment = new Genre { Name = "Desenvolvimento Pessoal" };
+            var creativity = new Genre { Name = "Criatividade" };
             context.Genres.AddRange(intuition, personalDevelopment, creativity);
             context.SaveChanges();
 
@@ -75,7 +75,7 @@ namespace LibraryAPI.Data
 
 
             // Seed Books Table
-            var blink_gladwell = new Book()
+            var blink_gladwell = new Book
             {
                 Title = "Decidir num piscar de olhos",
                 OgTitle = "Blink!",
@@ -85,7 +85,7 @@ namespace LibraryAPI.Data
                 PublisherId = publishers.Single(p => p.Name == "Dom Quixote").Id
             };
 
-            var intuition_osho = new Book()
+            var intuition_osho = new Book
             {
                 Title = "Intuição",
                 OgTitle = "Intuition: knowing beyond logic",
@@ -94,7 +94,7 @@ namespace LibraryAPI.Data
                 PublisherId = publishers.Single(p => p.Name == "Sábado").Id
             };
 
-            var creativity_osho = new Book()
+            var creativity_osho = new Book
             {
                 Title = "Criatividade : libertar as forças interiores",
                 PublicationYear = 2006
@@ -105,14 +105,33 @@ namespace LibraryAPI.Data
 
             ////////// SEED AuthorBook /////////////
 
-            var booksauthors = new BooksAuthors[]
+            // Look for any Books.
+            if (context.BooksAuthors.Any())
             {
-                new BooksAuthors() { BookId = blink_gladwell.Id, AuthorId = gladwell.Id },
-                new BooksAuthors() { BookId = intuition_osho.Id, AuthorId = osho.Id },
-                new BooksAuthors() { BookId = creativity_osho.Id, AuthorId = osho.Id }
+                return;   // DB has been seeded
+            }
+
+            var booksAuthors = new BooksAuthors[]
+            {
+                new BooksAuthors { BookId = blink_gladwell.Id, AuthorId = gladwell.Id },
+                new BooksAuthors { BookId = intuition_osho.Id, AuthorId = osho.Id },
+                new BooksAuthors { BookId = creativity_osho.Id, AuthorId = osho.Id }
             };
 
-            foreach (BooksAuthors bookAuthor in booksauthors)
+            /*foreach (BooksAuthors bookAuthor in booksAuthors)
+            {
+                var booksAuthorsInDB = context.BooksAuthors.Where(
+                    b =>
+                        b.Author.Id == bookAuthor.AuthorId &&
+                        b.Book.Id == bookAuthor.BookId);
+
+                if (booksAuthorsInDB == null)
+                {
+                    context.BooksAuthors.Add(bookAuthor);
+                }
+                
+            }*/
+            foreach (BooksAuthors bookAuthor in booksAuthors)
             {
                 context.BooksAuthors.Add(bookAuthor);
             }
@@ -120,13 +139,38 @@ namespace LibraryAPI.Data
 
             ////////// SEED BookGenre /////////////
 
-            context.BooksGenres.AddRange(
-                new BooksGenres() { BookId = blink_gladwell.Id, GenreId = intuition.Id },
-                new BooksGenres() { BookId = intuition_osho.Id, GenreId = personalDevelopment.Id },
-                new BooksGenres() { BookId = intuition_osho.Id, GenreId = creativity.Id },
-                new BooksGenres() { BookId = creativity_osho.Id, GenreId = creativity.Id });
+            // Look for any Books.
+            if (context.BooksGenres.Any())
+            {
+                return;   // DB has been seeded
+            }
 
+            var booksGenres = new BooksGenres[]
+            {
+                new BooksGenres { BookId = blink_gladwell.Id, GenreId = intuition.Id },
+                new BooksGenres { BookId = intuition_osho.Id, GenreId = personalDevelopment.Id },
+                new BooksGenres { BookId = intuition_osho.Id, GenreId = creativity.Id },
+                new BooksGenres { BookId = creativity_osho.Id, GenreId = creativity.Id }
+            };
+
+            foreach (BooksGenres bookGenres in booksGenres)
+            {
+                context.BooksGenres.Add(bookGenres);
+            }
             context.SaveChanges();
+            /*foreach (BooksGenres bookGenres in booksGenres)
+            {
+                var booksGenresInDB = context.BooksGenres.Where(
+                    b =>
+                        b.Genre.Id == bookGenres.GenreId &&
+                        b.Book.Id == bookGenres.BookId);
+
+                if (booksGenresInDB == null)
+                {
+                    context.BooksGenres.Add(bookGenres);
+                }
+            }*/
+
         }
     }
 }

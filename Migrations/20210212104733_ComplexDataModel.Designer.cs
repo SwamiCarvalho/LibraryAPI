@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LibraryAPI.Migrations
 {
     [DbContext(typeof(LibraryAPIDBContext))]
-    [Migration("20210211232829_Initial")]
-    partial class Initial
+    [Migration("20210212104733_ComplexDataModel")]
+    partial class ComplexDataModel
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

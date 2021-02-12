@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using LibraryAPI.Data;
 using LibraryAPI.Models;
+using System.Linq.Expressions;
+using LibraryAPI.DTOs;
 
 namespace LibraryAPI.Controllers
 {
@@ -25,7 +27,25 @@ namespace LibraryAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Book>>> GetBooks()
         {
-            return await _context.Books.ToListAsync();
+            //return await _context.Books.ToListAsync();
+            var model = await _context.Books
+                .Include(b => b.BooksGenres)
+                    .ThenInclude(bg => bg.Genre)
+                .AsNoTracking()
+                .OrderBy(b => b.Title)
+                .ToListAsync();
+            return model;
+        }
+
+        // GET: api/Books/genre - Get Books by Genre
+        [HttpGet("{genre}")]
+        public IQueryable<Book> GetBooksByGenre(string? genre)
+        {
+            var books = _context.Books.Include(b => b.BooksGenres)
+                                            .ThenInclude(bg => bg.Genre.Name.Equals(genre, StringComparison.OrdinalIgnoreCase))
+                                      .OrderBy(b => b.Title);
+                                            
+            return books;
         }
 
         // GET: api/Books/5
