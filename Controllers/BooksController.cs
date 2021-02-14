@@ -23,34 +23,46 @@ namespace LibraryAPI.Controllers
             _context = context;
         }
 
+
         // GET: api/Books
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Book>>> GetBooks()
+        public async Task<ActionResult<IEnumerable<Book>>> GetBooks(string genre)
         {
-            //return await _context.Books.ToListAsync();
-            var model = await _context.Books
-                .Include(b => b.BooksGenres)
-                    .ThenInclude(bg => bg.Genre)
+            if (string.IsNullOrEmpty(genre))
+            {
+                var model = await _context.Books
                 .AsNoTracking()
                 .OrderBy(b => b.Title)
                 .ToListAsync();
-            return model;
-        }
+                return model;
+            }
+            else
+            {
+                var genreId = _context.Genres.Where(g => g.Name.Equals(genre)).Select(g => g.Id).AsQueryable().Single();
+
+                var model = from b in _context.Books
+                            from bg in _context.BooksGenres
+                            where bg.GenreId == genreId
+                            where b.Id == bg.BookId
+                            select b;
+
+                return await model.ToListAsync();
+            }
+            
+         }
+
 
         // GET: api/Books/genre - Get Books by Genre
-        [HttpGet("{genre}")]
-        public IQueryable<Book> GetBooksByGenre(string? genre)
+        //[HttpGet("{genre}")]
+        /*[HttpGet]
+        public async Task<ActionResult<IEnumerable<Book>>> GetBooksByGenre(string genre)
         {
-            var books = _context.Books.Include(b => b.BooksGenres)
-                                            .ThenInclude(bg => bg.Genre.Name.Equals(genre, StringComparison.OrdinalIgnoreCase))
-                                      .OrderBy(b => b.Title);
-                                            
-            return books;
-        }
+            
+        }*/
 
         // GET: api/Books/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Book>> GetBook(long id)
+        //[HttpGet("{id}")]
+        /*public async Task<ActionResult<Book>> GetBook(long id)
         {
             var book = await _context.Books.FindAsync(id);
 
@@ -60,7 +72,7 @@ namespace LibraryAPI.Controllers
             }
 
             return book;
-        }
+        }*/
 
         // PUT: api/Books/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
