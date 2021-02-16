@@ -25,13 +25,22 @@ namespace LibraryAPI.Controllers
         }
 
 
-        
         // GET: api/Books
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Book>>> GetBooks(string genre = null, string author = null)
+        public async Task<ActionResult<IEnumerable<Book>>> GetBooks(string searchTerm = null, string genre = null, string author = null)
         {
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                var model = await _context.Books
+                .AsNoTracking()
+                .OrderBy(b => b.Title)
+                .Where(b => searchTerm == null || b.Title.Contains(searchTerm) || b.OgTitle.Contains(searchTerm))
+
+                .ToListAsync();
+                return model;
+            }
             // Get all Books when there is no filter
-            if (genre == null && author == null)
+            else if (genre == null && author == null)
             {
                 var model = await _context.Books
                                     .AsNoTracking()
@@ -43,18 +52,28 @@ namespace LibraryAPI.Controllers
             // Get all Books Filtered By Genre
             else
             {
-           
+            
                 long? authorId = null;
                 // If parameter Author Name is passed
                 if (!string.IsNullOrEmpty(author))
                 {
                     // Split Author Name Parameter
                     string[] firstLastName = Regex.Split(author, " ");
-                    // Get First Name from parameter
-                    string firstName = firstLastName[0];
 
+                    // Get First Name from parameter
+                    string firstName;
+                    string lastName;
                     // Condition, if Parameter has two names, get last name else set to null
-                    string lastName =  firstLastName.Length > 1 ? lastName = firstLastName[1] : lastName = null;
+                    if (firstLastName.Length > 1)
+                    {
+                        lastName = firstLastName[0];
+                        firstName = firstLastName[1];
+                    } 
+                    else
+                    {
+                        firstName = firstLastName[0];
+                        lastName = null; 
+                    }
 
                     authorId = _context.Authors.Where(a => a.LastName.Equals(lastName) 
                                                     && a.FirstName.Equals(firstName) 
@@ -159,6 +178,7 @@ namespace LibraryAPI.Controllers
 
             return NoContent();
         }
+
 
         private bool BookExists(long id)
         {
