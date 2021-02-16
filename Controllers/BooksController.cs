@@ -9,6 +9,7 @@ using LibraryAPI.Data;
 using LibraryAPI.Models;
 using System.Linq.Expressions;
 using LibraryAPI.DTOs;
+using System.Text.RegularExpressions;
 
 namespace LibraryAPI.Controllers
 {
@@ -24,45 +25,122 @@ namespace LibraryAPI.Controllers
         }
 
 
+        
         // GET: api/Books
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Book>>> GetBooks(string genre)
+        public async Task<ActionResult<IEnumerable<Book>>> GetBooks(string genre = null, string author = null)
         {
-            if (string.IsNullOrEmpty(genre))
+            // Get all Books when there is no filter
+            if (genre == null && author == null)
             {
                 var model = await _context.Books
-                .AsNoTracking()
-                .OrderBy(b => b.Title)
-                .ToListAsync();
+                                    .AsNoTracking()
+                                    .OrderBy(b => b.Title)
+                                    .ToListAsync();
+
                 return model;
             }
+            // Get all Books Filtered By Genre
             else
             {
-                var genreId = _context.Genres.Where(g => g.Name.Equals(genre)).Select(g => g.Id).AsQueryable().Single();
+           
+                long? authorId = null;
+                // Split query route of author name
+                if (!string.IsNullOrEmpty(author))
+                {
+                    
+
+                    string[] firstLastName = Regex.Split(author, " ");
+                    string firstName = firstLastName[0];
+                    string lastName = null;
+                    if (firstLastName.Length > 1)
+                    {
+                        
+                        lastName = firstLastName[1];
+                    }
+                    
+
+                    authorId = _context.Authors.Where(a => a.LastName.Equals(lastName) 
+                                                    && a.FirstName.Equals(firstName) 
+                                                    || author == null)
+                                               .Select(a => a.Id).AsQueryable().Single();
+                }
+
+                long? genreId = null;
+                if (!string.IsNullOrEmpty(genre))
+                {
+                    // Get Genre Id by Name
+                    genreId = _context.Genres.Where(g => g.Name.Equals(genre) 
+                                                || genre == null)
+                                             .Select(g => g.Id).AsQueryable().Single();
+                }
+
+                
+
+                // Get All Books Where Conditions are satisfied
+                var model = from b in _context.Books
+                                from bg in _context.BooksGenres
+                                where bg.GenreId == genreId || genreId == null
+
+                                from ba in _context.BooksAuthors
+                                where ba.AuthorId == authorId || authorId == null
+                            where b.Id == bg.BookId && b.Id == ba.BookId
+                            select b;
+
+                return await model.Distinct().ToListAsync();
+            }
+
+            /*// Get all Books Filtered By Author
+            else if (string.IsNullOrEmpty(genre) && !string.IsNullOrEmpty(author))
+            {
+                // Split query route of author name
+                string[] firstLastName = Regex.Split(author, " ");
+                string lastName = firstLastName[1];
+                string firstName = firstLastName[0];
+
+                var authorId = _context.Authors.Where(a => a.LastName.Equals(lastName) && a.FirstName.Equals(firstName))
+                                              .Select(a => a.Id).AsQueryable().Single();
 
                 var model = from b in _context.Books
-                            from bg in _context.BooksGenres
-                            where bg.GenreId == genreId
-                            where b.Id == bg.BookId
+                            from ba in _context.BooksAuthors
+                            where ba.AuthorId == authorId
+                            where b.Id == ba.BookId
                             select b;
 
                 return await model.ToListAsync();
-            }
-            
-         }
+            }*/
+            /*else if (!string.IsNullOrEmpty(genre) && !string.IsNullOrEmpty(author))
+            {
+                // Split query route of author name
+                string[] firstLastName = Regex.Split(author, " ");
+                string lastName = firstLastName[1];
+                string firstName = firstLastName[0];
 
+                // Get Genre Id by Name
+                var genreId = _context.Genres.Where(g => g.Name.Equals(genre)).Select(g => g.Id).AsQueryable().Single();
 
-        // GET: api/Books/genre - Get Books by Genre
-        //[HttpGet("{genre}")]
-        /*[HttpGet]
-        public async Task<ActionResult<IEnumerable<Book>>> GetBooksByGenre(string genre)
-        {
-            
-        }*/
+                // Get Author Id by First and Last Name
+                var authorId = _context.Authors.Where(a => a.FirstName.Equals(firstName) && a.LastName.Equals(lastName))
+                                               .Select(a => a.Id).AsQueryable().Single();
+
+                var model = from b in _context.Books
+                            from ba in _context.BooksAuthors
+                            where ba.AuthorId == authorId
+
+                            from bg in _context.BooksGenres
+                            where bg.GenreId == genreId
+                            where b.Id == ba.BookId && b.Id == bg.BookId
+                            select b;
+
+                return await model.ToListAsync();
+            }*/
+        }
+     
+
 
         // GET: api/Books/5
-        //[HttpGet("{id}")]
-        /*public async Task<ActionResult<Book>> GetBook(long id)
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Book>> GetBookInGenre(long id)
         {
             var book = await _context.Books.FindAsync(id);
 
@@ -70,9 +148,10 @@ namespace LibraryAPI.Controllers
             {
                 return NotFound();
             }
-
             return book;
-        }*/
+        }
+
+        
 
         // PUT: api/Books/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
