@@ -45,20 +45,16 @@ namespace LibraryAPI.Controllers
             {
            
                 long? authorId = null;
-                // Split query route of author name
+                // If parameter Author Name is passed
                 if (!string.IsNullOrEmpty(author))
                 {
-                    
-
+                    // Split Author Name Parameter
                     string[] firstLastName = Regex.Split(author, " ");
+                    // Get First Name from parameter
                     string firstName = firstLastName[0];
-                    string lastName = null;
-                    if (firstLastName.Length > 1)
-                    {
-                        
-                        lastName = firstLastName[1];
-                    }
-                    
+
+                    // Condition, if Parameter has two names, get last name else set to null
+                    string lastName =  firstLastName.Length > 1 ? lastName = firstLastName[1] : lastName = null;
 
                     authorId = _context.Authors.Where(a => a.LastName.Equals(lastName) 
                                                     && a.FirstName.Equals(firstName) 
@@ -75,7 +71,6 @@ namespace LibraryAPI.Controllers
                                              .Select(g => g.Id).AsQueryable().Single();
                 }
 
-                
 
                 // Get All Books Where Conditions are satisfied
                 var model = from b in _context.Books
@@ -89,58 +84,12 @@ namespace LibraryAPI.Controllers
 
                 return await model.Distinct().ToListAsync();
             }
-
-            /*// Get all Books Filtered By Author
-            else if (string.IsNullOrEmpty(genre) && !string.IsNullOrEmpty(author))
-            {
-                // Split query route of author name
-                string[] firstLastName = Regex.Split(author, " ");
-                string lastName = firstLastName[1];
-                string firstName = firstLastName[0];
-
-                var authorId = _context.Authors.Where(a => a.LastName.Equals(lastName) && a.FirstName.Equals(firstName))
-                                              .Select(a => a.Id).AsQueryable().Single();
-
-                var model = from b in _context.Books
-                            from ba in _context.BooksAuthors
-                            where ba.AuthorId == authorId
-                            where b.Id == ba.BookId
-                            select b;
-
-                return await model.ToListAsync();
-            }*/
-            /*else if (!string.IsNullOrEmpty(genre) && !string.IsNullOrEmpty(author))
-            {
-                // Split query route of author name
-                string[] firstLastName = Regex.Split(author, " ");
-                string lastName = firstLastName[1];
-                string firstName = firstLastName[0];
-
-                // Get Genre Id by Name
-                var genreId = _context.Genres.Where(g => g.Name.Equals(genre)).Select(g => g.Id).AsQueryable().Single();
-
-                // Get Author Id by First and Last Name
-                var authorId = _context.Authors.Where(a => a.FirstName.Equals(firstName) && a.LastName.Equals(lastName))
-                                               .Select(a => a.Id).AsQueryable().Single();
-
-                var model = from b in _context.Books
-                            from ba in _context.BooksAuthors
-                            where ba.AuthorId == authorId
-
-                            from bg in _context.BooksGenres
-                            where bg.GenreId == genreId
-                            where b.Id == ba.BookId && b.Id == bg.BookId
-                            select b;
-
-                return await model.ToListAsync();
-            }*/
         }
-     
 
 
         // GET: api/Books/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Book>> GetBookInGenre(long id)
+        public async Task<ActionResult<Book>> GetBookbyId(long id )
         {
             var book = await _context.Books.FindAsync(id);
 
