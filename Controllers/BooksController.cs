@@ -32,9 +32,11 @@ namespace LibraryAPI.Controllers
             if (!string.IsNullOrEmpty(searchTerm))
             {
                 var model = await _context.Books
-                .AsNoTracking()
-                .OrderBy(b => b.Title)
-                .Where(b => searchTerm == null || b.Title.Contains(searchTerm) || b.OgTitle.Contains(searchTerm))
+                                    .Include(b => b.BooksGenres)
+                                        .ThenInclude(bg => bg.Genre)
+                                    .AsNoTracking()
+                                    .OrderBy(b => b.Title)
+                                    .Where(b => searchTerm == null || b.Title.Contains(searchTerm) || b.OgTitle.Contains(searchTerm))
 
                 .ToListAsync();
                 return model;
