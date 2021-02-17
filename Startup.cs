@@ -1,4 +1,7 @@
+using AutoMapper;
 using LibraryAPI.Data;
+using LibraryAPI.Interfaces;
+using LibraryAPI.Repository;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -6,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using System;
 
 namespace LibraryAPI
 {
@@ -24,7 +28,12 @@ namespace LibraryAPI
             services.AddDbContext<LibraryAPIDBContext>(options =>
                                                 options.UseSqlServer(Configuration["ConnectionString:LibraryAPIDB"]));
 
+            // Create Repository Service
+            services.AddScoped<IRepositoryWrapper, RepositoryWrapper>();
+
             services.AddControllers();
+
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
             services.AddSwaggerGen(c =>
             {
@@ -53,5 +62,8 @@ namespace LibraryAPI
                 endpoints.MapControllers();
             });
         }
+
+
     }
+
 }

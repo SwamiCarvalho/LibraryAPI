@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using LibraryAPI.Data;
 using LibraryAPI.Models;
-using System.Linq.Expressions;
 using LibraryAPI.DTOs;
 using System.Text.RegularExpressions;
+using AutoMapper;
+using LibraryAPI.Interfaces;
+using Microsoft.Extensions.Logging;
 
 namespace LibraryAPI.Controllers
 {
@@ -17,39 +17,36 @@ namespace LibraryAPI.Controllers
     [ApiController]
     public class BooksController : ControllerBase
     {
-        private readonly LibraryAPIDBContext _context;
 
-        public BooksController(LibraryAPIDBContext context)
+        private IRepositoryWrapper _repo;
+        private IMapper _mapper;
+        private readonly ILogger _logger;
+
+        public BooksController(IRepositoryWrapper repo, IMapper mapper, ILogger logger)
         {
-            _context = context;
+            _repo = repo;
+            _mapper = mapper;
+            _logger = logger;
         }
 
 
         // GET: api/Books
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Book>>> GetBooks(string searchTerm = null, string genre = null, string author = null)
+        public async Task<IEnumerable<BookDTO>> GetBooks( [FromQuery] string searchTerm = null, [FromQuery] string genre = null, [FromQuery] string author = null)
         {
             if (!string.IsNullOrEmpty(searchTerm))
             {
-                var model = await _context.Books
-                                    .Include(b => b.BooksGenres)
-                                        .ThenInclude(bg => bg.Genre)
-                                    .AsNoTracking()
-                                    .OrderBy(b => b.Title)
-                                    .Where(b => searchTerm == null || b.Title.Contains(searchTerm) || b.OgTitle.Contains(searchTerm))
+                var books = await _repo.Books.FindByCondition(b => searchTerm == null || b.Title.Contains(searchTerm) || b.OgTitle.Contains(searchTerm)).ToListAsync();
 
-                .ToListAsync();
-                return model;
+                var booksResult = _mapper.Map<IEnumerable<BookDTO>>(books);
+                return booksResult;
             }
             // Get all Books when there is no filter
-            else if (genre == null && author == null)
+            else if (searchTerm == null && genre == null && author == null)
             {
-                var model = await _context.Books
-                                    .AsNoTracking()
-                                    .OrderBy(b => b.Title)
-                                    .ToListAsync();
-
-                return model;
+                var books = _repo.Books.GetAllBooksAsync();
+                var booksResult = _mapper.Map<IEnumerable<BookDTO>>(books);
+                return booksResult;
             }
             // Get all Books Filtered By Genre
             else
@@ -77,33 +74,42 @@ namespace LibraryAPI.Controllers
                         lastName = null; 
                     }
 
-                    authorId = _context.Authors.Where(a => a.LastName.Equals(lastName) 
-                                                    && a.FirstName.Equals(firstName) 
-                                                    || author == null)
-                                               .Select(a => a.Id).AsQueryable().Single();
+                    // Get Author Id by Name
+                    authorId = _repo.Authors
+                        .FindByCondition(a => a.LastName.Equals(lastName) && a.FirstName.Equals(firstName) || author == null)
+                        .Select(a => a.Id).AsQueryable().Single();
+
                 }
 
                 long? genreId = null;
                 if (!string.IsNullOrEmpty(genre))
                 {
                     // Get Genre Id by Name
-                    genreId = _context.Genres.Where(g => g.Name.Equals(genre) 
-                                                || genre == null)
-                                             .Select(g => g.Id).AsQueryable().Single();
+                    genreId = _repo.Genres
+                        .FindByCondition(g => g.Name.Equals(genre) || genre == null)
+                        .Select(g => g.Id).AsQueryable().Single();
+
+                                             
                 }
 
+                var booksGenre = _repo.BooksGenres.FindByCondition(bg => bg.GenreId == genreId || genreId == null);
+                var booksAuthors = _repo.BooksAuthors.FindByCondition(ba => ba.AuthorId == authorId || authorId == null);
 
+                
+                //var books = _repo.Books.FindByCondition(b => b.Id == booksGenre && b.Id == booksAuthors);
+
+                /*//var books = _repo.Books.
                 // Get All Books Where Conditions are satisfied
-                var model = from b in _context.Books
-                                from bg in _context.BooksGenres
+                var model = from b in _repo.Books
+                                from bg in _repo.BooksGenres
                                 where bg.GenreId == genreId || genreId == null
 
-                                from ba in _context.BooksAuthors
+                                from ba in _repo.BooksAuthors
                                 where ba.AuthorId == authorId || authorId == null
                             where b.Id == bg.BookId && b.Id == ba.BookId
-                            select b;
+                            select ProjectTo<BookDTO>(config);*/
 
-                return await model.Distinct().ToListAsync();
+                //return await model.Distinct().ToListAsync();
             }
         }
 
@@ -112,7 +118,7 @@ namespace LibraryAPI.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Book>> GetBookbyId(long id )
         {
-            var book = await _context.Books.FindAsync(id);
+            var book = await _repo.Books.GetBookByIdAsync(id);
 
             if (book == null)
             {
@@ -126,32 +132,36 @@ namespace LibraryAPI.Controllers
         // PUT: api/Books/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutBook(long id, Book book)
+        public async Task<IActionResult> PutBook(long id, [FromBody]Book book)
         {
-            if (id != book.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(book).State = EntityState.Modified;
-
             try
             {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!BookExists(id))
+                if (book == null)
                 {
+                    _logger.LogError("Owner object sent from client is null.");
+                    return BadRequest("Owner object is null");
+                }
+                if (!ModelState.IsValid)
+                {
+                    _logger.LogError("Invalid book object sent from client.");
+                    return BadRequest("Invalid model object");
+                }
+                var bookEntity = await _repo.Books.GetBookByIdAsync(id);
+                if (bookEntity == null)
+                {
+                    _logger.LogError($"Owner with id: {id}, hasn't been found in db.");
                     return NotFound();
                 }
-                else
-                {
-                    throw;
-                }
+                _mapper.Map(book, bookEntity);
+                _repo.Books.Update(bookEntity);
+                await _repo.SaveAsync();
+                return NoContent();
             }
-
-            return NoContent();
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside UpdateOwner action: {ex.Message}");
+                return StatusCode(500, "Internal server error");
+            }
         }
 
         // POST: api/Books
@@ -159,8 +169,8 @@ namespace LibraryAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<Book>> PostBook(Book book)
         {
-            _context.Books.Add(book);
-            await _context.SaveChangesAsync();
+            _repo.Books.Create(book);
+            await _repo.SaveAsync();
 
             return CreatedAtAction("GetBook", new { id = book.Id }, book);
         }
@@ -169,22 +179,19 @@ namespace LibraryAPI.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteBook(long id)
         {
-            var book = await _context.Books.FindAsync(id);
+            var book = await _repo.Books.GetBookByIdAsync(id);
             if (book == null)
             {
                 return NotFound();
             }
 
-            _context.Books.Remove(book);
-            await _context.SaveChangesAsync();
+            _repo.Books.Delete(book);
+            await _repo.SaveAsync();
 
             return NoContent();
         }
 
-
-        private bool BookExists(long id)
-        {
-            return _context.Books.Any(e => e.Id == id);
-        }
     }
+
+
 }

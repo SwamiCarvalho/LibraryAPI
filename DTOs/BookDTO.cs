@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LibraryAPI.Models;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -15,8 +16,6 @@ namespace LibraryAPI.DTOs
         [DisplayName("Publication Year")]
         public int PublicationYear { get; set; }
         public int? Edition { get; set; }
-        public string? Notes { get; set; }
-        [DisplayName("Physical Description")]
-        public string Genres { get; set; }
+        public List<GenreDTO> Genres { get; set; }
     }
 }
