@@ -16,6 +16,7 @@ namespace LibraryAPI.DTOs
         [DisplayName("Publication Year")]
         public int PublicationYear { get; set; }
         public int? Edition { get; set; }
-        public List<GenreDTO> Genres { get; set; }
+        public IEnumerable<GenreDTO> Genres { get; set; }
+        public IEnumerable<AuthorDTO> Authors { get; set; }
     }
 }

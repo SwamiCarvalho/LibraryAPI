@@ -24,5 +24,10 @@ namespace LibraryAPI.Repository
                 .OrderBy(b => b.FirstName)
                 .ToListAsync();
         }
+
+        public async Task<Author> GetAuthorByIdAsync(long id)
+        {
+            return await FindByCondition(a => a.Id == id).FirstOrDefaultAsync();
+        }
     }
 }

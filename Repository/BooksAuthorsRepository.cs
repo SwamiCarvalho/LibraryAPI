@@ -24,7 +24,7 @@ namespace LibraryAPI.Repository
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<BooksAuthors>> GetAllBooksIdsWhereAuthorId(long authorId)
+        public async Task<IEnumerable<BooksAuthors>> GetAllBooksWhereAuthorId(long authorId)
         {
             return await FindByCondition(ba => ba.AuthorId == authorId)
                 .Include(b => b.Book)

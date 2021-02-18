@@ -8,5 +8,6 @@ namespace LibraryAPI.Interfaces
     public interface IAuthorsRepository : IRepositoryBase<Author>
     {
         Task<IEnumerable<Author>> GetAllAuthorsAsync();
+        Task<Author> GetAuthorByIdAsync(long id);
     }
 }

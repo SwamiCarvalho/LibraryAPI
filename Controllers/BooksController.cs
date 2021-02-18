@@ -20,13 +20,12 @@ namespace LibraryAPI.Controllers
 
         private IRepositoryWrapper _repo;
         private IMapper _mapper;
-        private readonly ILogger _logger;
+        //private readonly ILogger<BooksController> _logger;
 
-        public BooksController(IRepositoryWrapper repo, IMapper mapper, ILogger logger)
+        public BooksController(IRepositoryWrapper repo, IMapper mapper)
         {
             _repo = repo;
             _mapper = mapper;
-            _logger = logger;
         }
 
 
@@ -44,9 +43,9 @@ namespace LibraryAPI.Controllers
             // Get all Books when there is no filter
             else if (searchTerm == null && genre == null && author == null)
             {
-                var books = _repo.Books.GetAllBooksAsync();
-                var booksResult = _mapper.Map<IEnumerable<BookDTO>>(books);
-                return booksResult;
+                var books = _repo.Books.GetAllBooks();
+                var model = _mapper.Map<IEnumerable<BookDTO>>(books);
+                return model;
             }
             // Get all Books Filtered By Genre
             else
@@ -92,24 +91,24 @@ namespace LibraryAPI.Controllers
                                              
                 }
 
-                var booksGenre = _repo.BooksGenres.FindByCondition(bg => bg.GenreId == genreId || genreId == null);
-                var booksAuthors = _repo.BooksAuthors.FindByCondition(ba => ba.AuthorId == authorId || authorId == null);
-
-                
-                //var books = _repo.Books.FindByCondition(b => b.Id == booksGenre && b.Id == booksAuthors);
-
-                /*//var books = _repo.Books.
                 // Get All Books Where Conditions are satisfied
-                var model = from b in _repo.Books
-                                from bg in _repo.BooksGenres
-                                where bg.GenreId == genreId || genreId == null
+                var modelQuery = from b in _repo.Books.GetAllBooks()
+                            from bg in _repo.BooksGenres.FindAll()
+                            where bg.GenreId == genreId || genreId == null
 
-                                from ba in _repo.BooksAuthors
-                                where ba.AuthorId == authorId || authorId == null
+                            from ba in _repo.BooksAuthors.FindAll()
+                            where ba.AuthorId == authorId || authorId == null
                             where b.Id == bg.BookId && b.Id == ba.BookId
-                            select ProjectTo<BookDTO>(config);*/
+                            select b;
 
-                //return await model.Distinct().ToListAsync();
+                modelQuery = modelQuery.AsQueryable().Distinct()
+                    .Include(b => b.BooksGenres)
+                        .ThenInclude(bg => bg.Genre)
+                    .Include(b => b.BooksAuthors)
+                        .ThenInclude(ba => ba.Author);
+
+                var model = _mapper.Map<IEnumerable<BookDTO>>(modelQuery);
+                return model;
             }
         }
 
@@ -138,18 +137,18 @@ namespace LibraryAPI.Controllers
             {
                 if (book == null)
                 {
-                    _logger.LogError("Owner object sent from client is null.");
+                    //_logger.LogError("Owner object sent from client is null.");
                     return BadRequest("Owner object is null");
                 }
                 if (!ModelState.IsValid)
                 {
-                    _logger.LogError("Invalid book object sent from client.");
+                    //_logger.LogError("Invalid book object sent from client.");
                     return BadRequest("Invalid model object");
                 }
                 var bookEntity = await _repo.Books.GetBookByIdAsync(id);
                 if (bookEntity == null)
                 {
-                    _logger.LogError($"Owner with id: {id}, hasn't been found in db.");
+                    //_logger.LogError($"Owner with id: {id}, hasn't been found in db.");
                     return NotFound();
                 }
                 _mapper.Map(book, bookEntity);
@@ -159,7 +158,7 @@ namespace LibraryAPI.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside UpdateOwner action: {ex.Message}");
+                //_logger.LogError($"Something went wrong inside UpdateOwner action: {ex.Message}");
                 return StatusCode(500, "Internal server error");
             }
         }

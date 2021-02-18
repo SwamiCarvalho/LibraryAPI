@@ -18,11 +18,14 @@ namespace LibraryAPI.Repository
         }
 
 
-        public async Task<IEnumerable<Book>> GetAllBooksAsync()
+        public IQueryable<Book> GetAllBooks()
         {
-            return await FindAll()
-                .OrderBy(b => b.Title)
-                .ToListAsync();
+            return FindAll()
+                /*.Include(b => b.BooksGenres)
+                    .ThenInclude(bg => bg.Genre)
+                .Include(b => b.BooksAuthors)
+                    .ThenInclude(ba => ba.Author)*/
+                .OrderBy(b => b.Title);
         }
 
         public async Task<Book> GetBookByIdAsync(long id)

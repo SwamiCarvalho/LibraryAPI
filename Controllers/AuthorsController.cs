@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using LibraryAPI.Models;
 using LibraryAPI.Data;
+using LibraryAPI.Interfaces;
 
 namespace LibraryAPI.Controllers
 {
@@ -14,25 +15,26 @@ namespace LibraryAPI.Controllers
     [ApiController]
     public class AuthorsController : ControllerBase
     {
-        private readonly LibraryAPIDBContext _context;
+        //private readonly LibraryAPIDBContext _repo;
+        private IRepositoryWrapper _repo;
 
-        public AuthorsController(LibraryAPIDBContext context)
+        public AuthorsController(IRepositoryWrapper repo)
         {
-            _context = context;
+            _repo = repo;
         }
 
         // GET: api/Authors
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Author>>> GetAuthors()
         {
-            return await _context.Authors.ToListAsync();
+            return await _repo.Authors.FindAll().ToListAsync();
         }
 
         // GET: api/Authors/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Author>> GetAuthor(long id)
         {
-            var author = await _context.Authors.FindAsync(id);
+            var author = await _repo.Authors.GetAuthorByIdAsync(id);
 
             if (author == null)
             {
@@ -52,15 +54,15 @@ namespace LibraryAPI.Controllers
                 return BadRequest();
             }
 
-            _context.Entry(author).State = EntityState.Modified;
+            var authorEntity = await _repo.Authors.GetAuthorByIdAsync(id);
 
             try
             {
-                await _context.SaveChangesAsync();
+                await _repo.SaveAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!AuthorExists(id))
+                if (authorEntity == null)
                 {
                     return NotFound();
                 }
@@ -78,8 +80,8 @@ namespace LibraryAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<Author>> PostAuthor(Author author)
         {
-            _context.Authors.Add(author);
-            await _context.SaveChangesAsync();
+            _repo.Authors.Create(author);
+            await _repo.SaveAsync();
 
             return CreatedAtAction("GetAuthor", new { id = author.Id }, author);
         }
@@ -88,21 +90,21 @@ namespace LibraryAPI.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAuthor(long id)
         {
-            var author = await _context.Authors.FindAsync(id);
+            var author = await _repo.Authors.GetAuthorByIdAsync(id);
             if (author == null)
             {
                 return NotFound();
             }
 
-            _context.Authors.Remove(author);
-            await _context.SaveChangesAsync();
+            _repo.Authors.Delete(author);
+            await _repo.SaveAsync();
 
             return NoContent();
         }
 
         private bool AuthorExists(long id)
         {
-            return _context.Authors.Any(e => e.Id == id);
+            return _repo.Authors.FindAll().Any(e => e.Id == id);
         }
     }
 }

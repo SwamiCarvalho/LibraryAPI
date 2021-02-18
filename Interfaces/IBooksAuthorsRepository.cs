@@ -9,6 +9,6 @@ namespace LibraryAPI.Interfaces
     {
         Task<IEnumerable<BooksAuthors>> GetAllBooksAuthorsAsync();
 
-        Task<IEnumerable<BooksAuthors>> GetAllBooksFromAuthorId(long authorId);
+        Task<IEnumerable<BooksAuthors>> GetAllBooksWhereAuthorId(long authorId);
     }
 }

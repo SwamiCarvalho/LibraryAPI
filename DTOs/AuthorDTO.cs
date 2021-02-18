@@ -12,5 +12,16 @@ namespace LibraryAPI.DTOs
         public string FirstName { get; set; }
         [DisplayName("Last Name")]
         public string? LastName { get; set; }
-    }
+
+        public string FullName
+        { get
+            {
+                return FirstName + LastName; 
+            } 
+        }
+            
+        
+    }  
+            
+    
 }

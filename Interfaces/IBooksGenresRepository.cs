@@ -11,7 +11,7 @@ namespace LibraryAPI.Interfaces
     {
         Task<IEnumerable<BooksGenres>> GetAllBooksGenresAsync();
 
-        Task<IEnumerable<BooksGenres>> GetAllBooksFromGenreId(long genreId);
+        Task<IEnumerable<BooksGenres>> GetAllBooksWhereGenreId(long genreId);
     }
 
 }
