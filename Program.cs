@@ -1,4 +1,3 @@
-using LibraryAPI;
 using LibraryAPI.Data;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
@@ -6,7 +5,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
 
-namespace MvcMovie
+namespace LibraryAPI
 {
     public class Program
     {

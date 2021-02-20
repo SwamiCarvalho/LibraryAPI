@@ -8,7 +8,8 @@ namespace LibraryAPI.Interfaces
 {
     public interface IBooksRepository : IRepositoryBase<Book>
     {
-        IQueryable<Book> GetAllBooks();
+        IEnumerable<Book> GetAllBooks();
+        IEnumerable<Book> GetAllBooksWithDetails();
         Task<Book> GetBookByIdAsync(long id);
         bool BookExists(long id);
     }

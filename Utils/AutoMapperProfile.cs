@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using LibraryAPI.DTOs;
 using LibraryAPI.Models;
+using LibraryAPI.Models.DTOs;
 
 namespace LibraryAPI.Utils
 {
@@ -8,9 +8,9 @@ namespace LibraryAPI.Utils
     {
         public AutoMapperProfile()
         {
-            CreateMap<BookDTO, Book>();
-            CreateMap<AuthorDTO, Author>();
-            CreateMap<GenreDTO, Genre>();
+            CreateMap<Book, BookDTO>();
+            CreateMap<Author, AuthorDTO>();
+            CreateMap<Genre,GenreDTO>();
         }
     }
 }

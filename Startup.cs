@@ -1,4 +1,3 @@
-using AutoMapper;
 using LibraryAPI.Data;
 using LibraryAPI.Interfaces;
 using LibraryAPI.Repository;

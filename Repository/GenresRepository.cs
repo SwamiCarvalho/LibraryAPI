@@ -21,8 +21,13 @@ namespace LibraryAPI.Repository
         public async Task<IEnumerable<Genre>> GetAllGenresAsync()
         {
             return await FindAll()
-                .OrderBy(b => b.Name)
+                .OrderBy(g => g.Name)
                 .ToListAsync();
+        }
+
+        public async Task<Genre> GetGenreByIdAsync(long id)
+        {
+            return await FindByCondition(g => g.Id == id).FirstOrDefaultAsync();
         }
     }
 }
