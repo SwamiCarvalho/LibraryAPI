@@ -44,14 +44,14 @@ namespace LibraryAPI.Controllers
                         .ToListAsync();
 
                     var model = _mapper.Map<List<BookDTO>>(modelR);
-                    return model;
+                    return Ok(model);
                 }
                 // Get all Books when there is no filter
                 else if (searchTerm == null && genre == null && author == null)
                 {
                     var modelR = _repo.Books.GetAllBooksWithDetails();
                     var model = _mapper.Map<List<BookDTO>>(modelR);
-                    return model;
+                    return Ok(model);
                 }
                 // Get all Books Filtered By Genre
                 else
@@ -114,7 +114,7 @@ namespace LibraryAPI.Controllers
                                         .ThenInclude(ba => ba.Author)*/.ToList();
 
                     var model = _mapper.Map<List<BookDTO>>(modelR);
-                    return model;
+                    return Ok(model);
                 }
             }
             catch
@@ -137,7 +137,7 @@ namespace LibraryAPI.Controllers
                     return NotFound();
                 }
                 //var book = _mapper.Map<List<BookDTO>>(model);
-                return book;
+                return Ok(book);
             }
             catch
             {

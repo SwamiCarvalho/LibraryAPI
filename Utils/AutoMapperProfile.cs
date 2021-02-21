@@ -10,7 +10,7 @@ namespace LibraryAPI.Utils
         {
             CreateMap<Book, BookDTO>();
             CreateMap<Author, AuthorDTO>();
-            CreateMap<Genre,GenreDTO>();
+            CreateMap<Genre, GenreDTO>();
         }
     }
 }

@@ -9,5 +9,6 @@ namespace LibraryAPI.Models
         public long Id { get; set; }
         [Required]
         public string Name { get; set; }
+        public virtual ICollection<BooksGenres> BooksGenres { get; set; }
     }
 }

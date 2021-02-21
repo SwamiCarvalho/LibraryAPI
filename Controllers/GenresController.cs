@@ -28,12 +28,12 @@ namespace LibraryAPI.Controllers
         {
             var genreEntity = await _repo.Genres.GetAllGenresAsync();
             var genre = _mapper.Map<List<GenreDTO>>(genreEntity);
-            return genre;
+            return Ok(genre);
         }
 
         // GET: api/Genres/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Genre>> GetGenre([FromRoute]long id)
+        public async Task<ActionResult<Genre>> GetGenre(long id)
         {
             var genre = await _repo.Genres.GetGenreByIdAsync(id);
 
@@ -43,7 +43,7 @@ namespace LibraryAPI.Controllers
             }
 
             //var genre = _mapper.Map<Genre>(genreEntity);
-            return genre;
+            return Ok(genre);
         }
 
         // PUT: api/Genres/5
@@ -53,7 +53,7 @@ namespace LibraryAPI.Controllers
         {
             try
             {
-                if (genre == null)
+                if (id != genre.Id)
                 {
                     return BadRequest("Owner object is null");
                 }
@@ -61,15 +61,11 @@ namespace LibraryAPI.Controllers
                 {
                     return BadRequest("Invalid model object");
                 }
-                var genreEntity = await _repo.Genres.GetGenreByIdAsync(id);
-                if (genreEntity == null)
-                {
-                    return NotFound();
-                }
-                _mapper.Map(genre, genreEntity);
-                _repo.Genres.Update(genreEntity);
+
+                _repo.Genres.Update(genre);
+  
                 await _repo.SaveAsync();
-                return NoContent();
+                return Ok();
             }
             catch
             {
@@ -80,12 +76,12 @@ namespace LibraryAPI.Controllers
         // POST: api/Genres
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Genre>> PostGenre([FromBody]Genre genre)
+        public async Task<ActionResult<Genre>> PostGenre(Genre genre)
         {
             _repo.Genres.Create(genre);
             await _repo.SaveAsync();
 
-            return CreatedAtAction("GetGenre", new { id = genre.Id }, genre);
+            return CreatedAtAction(nameof(GetGenre), new { id = genre.Id }, genre);
         }
 
         // DELETE: api/Genres/5
@@ -101,7 +97,7 @@ namespace LibraryAPI.Controllers
             _repo.Genres.Delete(genre);
             await _repo.SaveAsync();
 
-            return NoContent();
+            return Ok();
         }
 
         private bool GenreExists(long id)

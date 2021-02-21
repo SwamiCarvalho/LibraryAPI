@@ -12,7 +12,7 @@ namespace LibraryAPI.Models.DTOs
         [DisplayName("Publication Year")]
         public int PublicationYear { get; set; }
         public int? Edition { get; set; }
-        public virtual List<GenreDTO> Genres { get; set; }
-        public virtual List<AuthorDTO> Authors { get; set; }
+        public List<GenreDTO> Genres { get; set; }
+        public List<AuthorDTO> Authors { get; set; }
     }
 }
