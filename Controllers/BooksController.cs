@@ -126,17 +126,17 @@ namespace LibraryAPI.Controllers
 
         // GET: api/Books/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Book>> GetBookbyId(long id)
+        public async Task<ActionResult<BookDetailsDTO>> GetBookbyId(long id)
         {
             try
             {
-                var book = await _repo.Books.GetBookByIdAsync(id);
+                var bookEntity = await _repo.Books.GetBookDetailsAsync(id);
 
-                if (book == null)
+                if (bookEntity == null)
                 {
                     return NotFound();
                 }
-                //var book = _mapper.Map<List<BookDTO>>(model);
+                var book = _mapper.Map<BookDetailsDTO>(bookEntity);
                 return Ok(book);
             }
             catch

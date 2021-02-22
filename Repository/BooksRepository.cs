@@ -39,6 +39,17 @@ namespace LibraryAPI.Repository
             return await FindByCondition(b => b.Id == id).FirstOrDefaultAsync();
         }
 
+        public async Task<Book> GetBookDetailsAsync(long id)
+        {
+            return await FindByCondition(b => b.Id == id).AsQueryable()
+                .Include(b => b.BooksGenres)
+                    .ThenInclude(bg => bg.Genre)
+                .Include(b => b.BooksAuthors)
+                    .ThenInclude(ba => ba.Author)
+                .OrderBy(b => b.Title).FirstOrDefaultAsync();
+
+        }
+
         public bool BookExists(long id)
         {
             return FindAll().Any(b => b.Id == id);

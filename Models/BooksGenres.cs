@@ -9,7 +9,7 @@ namespace LibraryAPI.Models
         public long BookId { get; set; }
         [ForeignKey("GenreId")]
         public long GenreId { get; set; }
-        public Book Book { get; set; }
-        public Genre Genre { get; set; }
+        public virtual Book Book { get; set; }
+        public virtual Genre Genre { get; set; }
     }
 }

@@ -24,32 +24,38 @@ namespace LibraryAPI.Controllers
 
         // GET: api/Genres
         [HttpGet]
-        public async Task<ActionResult<List<GenreDTO>>> GetGenres()
+        public async Task<ActionResult<List<Genre>>> GetGenres()
         {
-            var genreEntity = await _repo.Genres.GetAllGenresAsync();
-            var genre = _mapper.Map<List<GenreDTO>>(genreEntity);
+            var genre = await _repo.Genres.GetAllGenresAsync();
+            //var genre = _mapper.Map<List<Genre>>(genreEntity);
             return Ok(genre);
         }
 
         // GET: api/Genres/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Genre>> GetGenre(long id)
+        public async Task<ActionResult<Genre>> GetGenre(long? id)
         {
-            var genre = await _repo.Genres.GetGenreByIdAsync(id);
-
-            if (genre == null)
+            if (id == null)
             {
                 return NotFound();
             }
 
-            //var genre = _mapper.Map<Genre>(genreEntity);
+            var genreEntity = await _repo.Genres.GetGenreByIdAsync(id);
+
+            if (genreEntity == null)
+            {
+                return NotFound();
+            }
+
+            var genre = _mapper.Map<GenreDTO>(genreEntity);
             return Ok(genre);
         }
 
         // PUT: api/Genres/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutGenre(long id, Genre genre)
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult<Genre>> PutGenre(long id, Genre genre)
         {
             try
             {
@@ -65,7 +71,7 @@ namespace LibraryAPI.Controllers
                 _repo.Genres.Update(genre);
   
                 await _repo.SaveAsync();
-                return Ok();
+                return Ok(genre);
             }
             catch
             {

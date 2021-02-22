@@ -8,7 +8,7 @@ namespace LibraryAPI.Models.DTOs
 {
     public class AuthorDTO
     {
-        public string Id { get; set; }
+        public long Id { get; set; }
         [DisplayName("First Name")]   
         public string FirstName { get; set; }
         [DisplayName("Last Name")]
@@ -17,7 +17,7 @@ namespace LibraryAPI.Models.DTOs
         public string FullName
         { get
             {
-                return FirstName + LastName; 
+                return FirstName + " " + LastName; 
             } 
         }
             

@@ -25,7 +25,7 @@ namespace LibraryAPI.Repository
                 .ToListAsync();
         }
 
-        public async Task<Genre> GetGenreByIdAsync(long id)
+        public async Task<Genre> GetGenreByIdAsync(long? id)
         {
             return await FindByCondition(g => g.Id == id).FirstOrDefaultAsync();
         }

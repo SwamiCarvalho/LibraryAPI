@@ -11,5 +11,13 @@ namespace LibraryAPI.Models
         public string? LastName { get; set; }
         public virtual ICollection<BooksAuthors> BooksAuthors { get; set; }
 
+        public string FullName
+        {
+            get
+            {
+                return FirstName + " " + LastName;
+            }
+        }
+
     }
 }
