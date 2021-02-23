@@ -126,17 +126,24 @@ namespace LibraryAPI.Controllers
 
         // GET: api/Books/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<BookDetailsDTO>> GetBookbyId(long id)
+        public async Task<ActionResult<BookDetailsDTO>> GetBookById(long? id)
         {
             try
             {
+                BookDetailsDTO book = new BookDetailsDTO();
+
+                if(id == null)
+                {
+                    NotFound();
+                }
+
                 var bookEntity = await _repo.Books.GetBookDetailsAsync(id);
 
                 if (bookEntity == null)
                 {
                     return NotFound();
                 }
-                var book = _mapper.Map<BookDetailsDTO>(bookEntity);
+                book = _mapper.Map<BookDetailsDTO>(bookEntity);
                 return Ok(book);
             }
             catch
@@ -150,8 +157,7 @@ namespace LibraryAPI.Controllers
         // PUT: api/Books/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UpdateBook(long id, Book book)
+        public ActionResult<Book> UpdateBook([Bind("Id,Title,OgTitle,PublicationYear,Edition,Notes,PhysicalDescription")] Book book)
         {
             try
             {
@@ -163,15 +169,11 @@ namespace LibraryAPI.Controllers
                 {
                     return BadRequest("Invalid model object");
                 }
-                var bookEntity = await _repo.Books.GetBookByIdAsync(id);
-                if (bookEntity == null)
-                {
-                    return NotFound();
-                }
-                _mapper.Map(book, bookEntity);
-                _repo.Books.Update(bookEntity);
-                await _repo.SaveAsync();
-                return NoContent();
+
+                _repo.Books.Update(book);
+                _repo.SaveAsync();
+
+                return Ok(book);
             }
             catch
             {
@@ -183,13 +185,12 @@ namespace LibraryAPI.Controllers
         // POST: api/Books
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult<Book>> CreateBook(Book book)
+        public ActionResult<Book> CreateBook(Book book)
         {
             _repo.Books.Create(book);
-            await _repo.SaveAsync();
+            _repo.SaveAsync();
 
-            return CreatedAtAction("BookbyId", new { id = book.Id }, book);
+            return CreatedAtAction(nameof(GetBookById), new { id = book.Id }, book);
         }
 
 

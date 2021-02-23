@@ -39,7 +39,7 @@ namespace LibraryAPI.Repository
             return await FindByCondition(b => b.Id == id).FirstOrDefaultAsync();
         }
 
-        public async Task<Book> GetBookDetailsAsync(long id)
+        public async Task<Book> GetBookDetailsAsync(long? id)
         {
             return await FindByCondition(b => b.Id == id).AsQueryable()
                 .Include(b => b.BooksGenres)

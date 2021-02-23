@@ -24,10 +24,9 @@ namespace LibraryAPI.Controllers
 
         // GET: api/Genres
         [HttpGet]
-        public async Task<ActionResult<List<Genre>>> GetGenres()
+        public ActionResult<IEnumerable<Genre>> GetGenres()
         {
-            var genre = await _repo.Genres.GetAllGenresAsync();
-            //var genre = _mapper.Map<List<Genre>>(genreEntity);
+            var genre = _repo.Genres.FindAll().OrderBy(g => g.Name).ToList();
             return Ok(genre);
         }
 
@@ -40,29 +39,24 @@ namespace LibraryAPI.Controllers
                 return NotFound();
             }
 
-            var genreEntity = await _repo.Genres.GetGenreByIdAsync(id);
+            var genre = await _repo.Genres.GetGenreByIdAsync(id);
 
-            if (genreEntity == null)
+            if (genre == null)
             {
                 return NotFound();
             }
 
-            var genre = _mapper.Map<GenreDTO>(genreEntity);
+            //var genre = _mapper.Map<GenreDTO>(genreEntity);
             return Ok(genre);
         }
 
         // PUT: api/Genres/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult<Genre>> PutGenre(long id, Genre genre)
+        public ActionResult<Genre> PutGenre([Bind("Id,Name")] Genre genre)
         {
             try
             {
-                if (id != genre.Id)
-                {
-                    return BadRequest("Owner object is null");
-                }
                 if (!ModelState.IsValid)
                 {
                     return BadRequest("Invalid model object");
@@ -70,7 +64,7 @@ namespace LibraryAPI.Controllers
 
                 _repo.Genres.Update(genre);
   
-                await _repo.SaveAsync();
+                _repo.SaveAsync();
                 return Ok(genre);
             }
             catch
@@ -92,7 +86,7 @@ namespace LibraryAPI.Controllers
 
         // DELETE: api/Genres/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteGenre(long id)
+        public async Task<IActionResult> DeleteGenre([FromRoute]long id)
         {
             var genre = await _repo.Genres.GetGenreByIdAsync(id);
             if (genre == null)

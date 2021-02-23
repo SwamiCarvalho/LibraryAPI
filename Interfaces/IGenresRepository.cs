@@ -7,7 +7,6 @@ namespace LibraryAPI.Interfaces
 {
     public interface IGenresRepository : IRepositoryBase<Genre>
     {
-        Task<IEnumerable<Genre>> GetAllGenresAsync();
         Task<Genre> GetGenreByIdAsync(long? id);
     }
 }

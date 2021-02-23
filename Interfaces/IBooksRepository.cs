@@ -11,7 +11,7 @@ namespace LibraryAPI.Interfaces
         IEnumerable<Book> GetAllBooks();
         IEnumerable<Book> GetAllBooksWithDetails();
         Task<Book> GetBookByIdAsync(long id);
-        Task<Book> GetBookDetailsAsync(long id);
+        Task<Book> GetBookDetailsAsync(long? id);
         bool BookExists(long id);
     }
 }
