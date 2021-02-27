@@ -16,6 +16,8 @@ namespace LibraryAPI.Data
         public DbSet<Publisher> Publishers { get; set; }
         public DbSet<BooksAuthors> BooksAuthors { get; set; }
         public DbSet<BooksGenres> BooksGenres { get; set; }
+        public DbSet<Librarian> Librarian { get; set; }
+        public DbSet<Recomendations> Recomendations { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -25,6 +27,8 @@ namespace LibraryAPI.Data
             modelBuilder.Entity<Book>().ToTable("Books");
             modelBuilder.Entity<BooksAuthors>().ToTable("BooksAuthors");
             modelBuilder.Entity<BooksGenres>().ToTable("BooksGenres");
+            modelBuilder.Entity<Librarian>().ToTable("Librarian");
+            modelBuilder.Entity<Recomendations>().ToTable("Recomendations");
 
             modelBuilder.Entity<BooksAuthors>()
                 .HasKey(b => new { b.BookId, b.AuthorId });
