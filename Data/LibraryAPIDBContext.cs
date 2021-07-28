@@ -27,6 +27,7 @@ namespace LibraryAPI.Data
             modelBuilder.Entity<Book>().ToTable("Books");
             modelBuilder.Entity<BooksAuthors>().ToTable("BooksAuthors");
             modelBuilder.Entity<BooksGenres>().ToTable("BooksGenres");
+
             modelBuilder.Entity<Librarian>().ToTable("Librarian");
             modelBuilder.Entity<Recomendations>().ToTable("Recomendations");
 
