@@ -4,14 +4,16 @@ using LibraryAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace LibraryAPI.Migrations
 {
     [DbContext(typeof(LibraryAPIDBContext))]
-    partial class LibraryAPIDBContextModelSnapshot : ModelSnapshot
+    [Migration("20210227011918_Final")]
+    partial class Final
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -120,6 +122,22 @@ namespace LibraryAPI.Migrations
                     b.ToTable("Genres");
                 });
 
+            modelBuilder.Entity("LibraryAPI.Models.Librarian", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .UseIdentityColumn();
+
+                    b.Property<string>("FullName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Librarian");
+                });
+
             modelBuilder.Entity("LibraryAPI.Models.Publisher", b =>
                 {
                     b.Property<long>("Id")
@@ -138,6 +156,35 @@ namespace LibraryAPI.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Publishers");
+                });
+
+            modelBuilder.Entity("LibraryAPI.Models.Recomendations", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .UseIdentityColumn();
+
+                    b.Property<long>("BookId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long>("LibrarianId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BookId");
+
+                    b.HasIndex("LibrarianId");
+
+                    b.ToTable("Recomendations");
                 });
 
             modelBuilder.Entity("LibraryAPI.Models.Book", b =>
@@ -185,6 +232,25 @@ namespace LibraryAPI.Migrations
                     b.Navigation("Book");
 
                     b.Navigation("Genre");
+                });
+
+            modelBuilder.Entity("LibraryAPI.Models.Recomendations", b =>
+                {
+                    b.HasOne("LibraryAPI.Models.Book", "Book")
+                        .WithMany()
+                        .HasForeignKey("BookId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("LibraryAPI.Models.Librarian", "Librarian")
+                        .WithMany()
+                        .HasForeignKey("LibrarianId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Book");
+
+                    b.Navigation("Librarian");
                 });
 
             modelBuilder.Entity("LibraryAPI.Models.Author", b =>

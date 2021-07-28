@@ -2,14 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using LibraryAPI.Data;
 using LibraryAPI.Models;
-using System.Linq.Expressions;
-using LibraryAPI.DTOs;
 using System.Text.RegularExpressions;
+using LibraryAPI.Interfaces;
+using Microsoft.EntityFrameworkCore;
+using AutoMapper;
+using LibraryAPI.Models.DTOs;
 
 namespace LibraryAPI.Controllers
 {
@@ -17,174 +16,229 @@ namespace LibraryAPI.Controllers
     [ApiController]
     public class BooksController : ControllerBase
     {
-        private readonly LibraryAPIDBContext _context;
 
-        public BooksController(LibraryAPIDBContext context)
+        private IRepositoryWrapper _repo;
+        private IMapper _mapper;
+        //private readonly ILogger<BooksController> _logger;
+
+        public BooksController(IRepositoryWrapper repo, IMapper mapper)
         {
-            _context = context;
+            _repo = repo;
+            _mapper = mapper;
         }
 
 
         // GET: api/Books
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Book>>> GetBooks(string searchTerm = null, string genre = null, string author = null)
+        public async Task<ActionResult<List<BookDTO>>> GetBooks([FromQuery] string searchTerm, [FromQuery] string genre, [FromQuery] string author)
         {
-            if (!string.IsNullOrEmpty(searchTerm))
+            try
             {
-                var model = await _context.Books
-                                    .Include(b => b.BooksGenres)
-                                        .ThenInclude(bg => bg.Genre)
-                                    .AsNoTracking()
-                                    .OrderBy(b => b.Title)
-                                    .Where(b => searchTerm == null || b.Title.Contains(searchTerm) || b.OgTitle.Contains(searchTerm))
-
-                .ToListAsync();
-                return model;
-            }
-            // Get all Books when there is no filter
-            else if (genre == null && author == null)
-            {
-                var model = await _context.Books
-                                    .AsNoTracking()
-                                    .OrderBy(b => b.Title)
-                                    .ToListAsync();
-
-                return model;
-            }
-            // Get all Books Filtered By Genre
-            else
-            {
-            
-                long? authorId = null;
-                // If parameter Author Name is passed
-                if (!string.IsNullOrEmpty(author))
+                if (!string.IsNullOrEmpty(searchTerm))
                 {
-                    // Split Author Name Parameter
-                    string[] firstLastName = Regex.Split(author, " ");
+                    var modelR = await _repo.Books.FindByCondition(b => searchTerm == null || b.Title.Contains(searchTerm) || b.OgTitle.Contains(searchTerm)).AsQueryable()
+                        .Include(b => b.BooksGenres)
+                            .ThenInclude(bg => bg.Genre)
+                        .Include(b => b.BooksAuthors)
+                            .ThenInclude(ba => ba.Author)
+                        .ToListAsync();
 
-                    // Get First Name from parameter
-                    string firstName;
-                    string lastName;
-                    // Condition, if Parameter has two names, get last name else set to null
-                    if (firstLastName.Length > 1)
+                    var model = _mapper.Map<List<BookDTO>>(modelR);
+                    return Ok(model);
+                }
+                // Get all Books when there is no filter
+                else if (searchTerm == null && genre == null && author == null)
+                {
+                    var modelR = _repo.Books.GetAllBooksWithDetails();
+                    var model = _mapper.Map<List<BookDTO>>(modelR);
+                    return Ok(model);
+                }
+                // Get all Books Filtered By Genre
+                else
+                {
+
+                    long? authorId = null;
+                    // If parameter Author Name is passed
+                    if (!string.IsNullOrEmpty(author))
                     {
-                        lastName = firstLastName[0];
-                        firstName = firstLastName[1];
-                    } 
-                    else
-                    {
-                        firstName = firstLastName[0];
-                        lastName = null; 
+                        // Split Author Name Parameter
+                        string[] firstLastName = Regex.Split(author, " ");
+
+                        // Get First Name from parameter
+                        string firstName;
+                        string lastName;
+                        // Condition, if Parameter has two names, get last name else set to null
+                        if (firstLastName.Length > 1)
+                        {
+                            lastName = firstLastName[0];
+                            firstName = firstLastName[1];
+                        }
+                        else
+                        {
+                            firstName = firstLastName[0];
+                            lastName = null;
+                        }
+
+                        // Get Author Id by Name
+                        authorId = _repo.Authors
+                            .FindByCondition(a => a.LastName.Equals(lastName) && a.FirstName.Equals(firstName) || author == null)
+                            .Select(a => a.Id).AsQueryable().Single();
+
                     }
 
-                    authorId = _context.Authors.Where(a => a.LastName.Equals(lastName) 
-                                                    && a.FirstName.Equals(firstName) 
-                                                    || author == null)
-                                               .Select(a => a.Id).AsQueryable().Single();
+                    long? genreId = null;
+                    if (!string.IsNullOrEmpty(genre))
+                    {
+                        // Get Genre Id by Name
+                        genreId = _repo.Genres
+                            .FindByCondition(g => g.Name.Equals(genre) || genre == null)
+                            .Select(g => g.Id).AsQueryable().Single();
+
+
+                    }
+
+                    // Get All Books Where Conditions are satisfied
+                    var modelQuery = from b in _repo.Books.GetAllBooksWithDetails()
+                                     from bg in _repo.BooksGenres.FindAll()
+                                     where bg.GenreId == genreId || genreId == null
+
+                                     from ba in _repo.BooksAuthors.FindAll()
+                                     where ba.AuthorId == authorId || authorId == null
+                                     where b.Id == bg.BookId && b.Id == ba.BookId
+                                     select b;
+
+                    var modelR = modelQuery.AsQueryable().Distinct()
+                                    /*.Include(b => b.BooksGenres)
+                                        .ThenInclude(bg => bg.Genre)
+                                    .Include(b => b.BooksAuthors)
+                                        .ThenInclude(ba => ba.Author)*/.ToList();
+
+                    var model = _mapper.Map<List<BookDTO>>(modelR);
+                    return Ok(model);
                 }
-
-                long? genreId = null;
-                if (!string.IsNullOrEmpty(genre))
-                {
-                    // Get Genre Id by Name
-                    genreId = _context.Genres.Where(g => g.Name.Equals(genre) 
-                                                || genre == null)
-                                             .Select(g => g.Id).AsQueryable().Single();
-                }
-
-
-                // Get All Books Where Conditions are satisfied
-                var model = from b in _context.Books
-                                from bg in _context.BooksGenres
-                                where bg.GenreId == genreId || genreId == null
-
-                                from ba in _context.BooksAuthors
-                                where ba.AuthorId == authorId || authorId == null
-                            where b.Id == bg.BookId && b.Id == ba.BookId
-                            select b;
-
-                return await model.Distinct().ToListAsync();
+            }
+            catch
+            {
+                return StatusCode(500, "Internal server error");
             }
         }
 
 
         // GET: api/Books/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Book>> GetBookbyId(long id )
+        public async Task<ActionResult<BookDetailsDTO>> GetBookById(long? id)
         {
-            var book = await _context.Books.FindAsync(id);
-
-            if (book == null)
+            try
             {
-                return NotFound();
+                BookDetailsDTO book = new BookDetailsDTO();
+
+                if(id == null)
+                {
+                    NotFound();
+                }
+
+                var bookEntity = await _repo.Books.GetBookDetailsAsync(id);
+
+                if (bookEntity == null)
+                {
+                    return NotFound();
+                }
+                book = _mapper.Map<BookDetailsDTO>(bookEntity);
+                return Ok(book);
             }
-            return book;
+            catch
+            {
+                return StatusCode(500, "Internal server error");
+            }
         }
 
-        
+
 
         // PUT: api/Books/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutBook(long id, Book book)
+        public ActionResult<Book> UpdateBook([Bind("Id,Title,OgTitle,PublicationYear,Edition,Notes,PhysicalDescription")] Book book)
         {
-            if (id != book.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(book).State = EntityState.Modified;
-
             try
             {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!BookExists(id))
+                if (book == null)
                 {
-                    return NotFound();
+                    return BadRequest("Owner object is null");
                 }
-                else
+                if (!ModelState.IsValid)
                 {
-                    throw;
+                    return BadRequest("Invalid model object");
                 }
-            }
 
-            return NoContent();
+                _repo.Books.Update(book);
+                _repo.SaveAsync();
+
+                return Ok(book);
+            }
+            catch
+            {
+                return StatusCode(500, "Internal server error");
+            }
         }
+
 
         // POST: api/Books
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Book>> PostBook(Book book)
+        public ActionResult<Book> CreateBook(Book book)
         {
-            _context.Books.Add(book);
-            await _context.SaveChangesAsync();
+            _repo.Books.Create(book);
+            _repo.SaveAsync();
 
-            return CreatedAtAction("GetBook", new { id = book.Id }, book);
+            return CreatedAtAction(nameof(GetBookById), new { id = book.Id }, book);
         }
+
 
         // DELETE: api/Books/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteBook(long id)
+        [HttpDelete]
+        public async Task<ActionResult> DeleteBook(long id)
         {
-            var book = await _context.Books.FindAsync(id);
-            if (book == null)
+            try
             {
-                return NotFound();
+                var book = await _repo.Books.GetBookByIdAsync(id);
+                if (book == null)
+                {
+                    return NotFound();
+                }
+
+                //_repo.Books.Delete(book);
+                //await _repo.SaveAsync();
+                return NoContent();
+            }
+            catch
+            {
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+
+        /*// DELETE: api/Books/5
+        [HttpPost, ActionName("DeleteBook")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed([FromRoute]long id)
+        {
+            try
+            {
+                var book = await _repo.Books.GetBookByIdAsync(id);
+
+                if (book == null)
+                {
+                    return NotFound();
+                }
+                _repo.Books.Delete(book);
+                await _repo.SaveAsync();
+                return NoContent();
+            }
+            catch
+            {
+                return StatusCode(500, "Internal server error");
             }
 
-            _context.Books.Remove(book);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-
-        private bool BookExists(long id)
-        {
-            return _context.Books.Any(e => e.Id == id);
-        }
+        }*/
     }
 }

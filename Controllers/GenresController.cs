@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using LibraryAPI.Models;
-using LibraryAPI.Data;
+using LibraryAPI.Interfaces;
+using LibraryAPI.Models.DTOs;
+using AutoMapper;
 
 namespace LibraryAPI.Controllers
 {
@@ -14,63 +13,64 @@ namespace LibraryAPI.Controllers
     [ApiController]
     public class GenresController : ControllerBase
     {
-        private readonly LibraryAPIDBContext _context;
+        private readonly IRepositoryWrapper _repo;
+        private IMapper _mapper;
 
-        public GenresController(LibraryAPIDBContext context)
+        public GenresController(IRepositoryWrapper repo, IMapper mapper)
         {
-            _context = context;
+            _repo = repo;
+            _mapper = mapper;
         }
 
         // GET: api/Genres
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Genre>>> GetGenres()
+        public ActionResult<IEnumerable<Genre>> GetGenres()
         {
-            return await _context.Genres.ToListAsync();
+            var genre = _repo.Genres.FindAll().OrderBy(g => g.Name).ToList();
+            return Ok(genre);
         }
 
         // GET: api/Genres/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Genre>> GetGenre(long id)
+        public async Task<ActionResult<Genre>> GetGenre(long? id)
         {
-            var genre = await _context.Genres.FindAsync(id);
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var genre = await _repo.Genres.GetGenreByIdAsync(id);
 
             if (genre == null)
             {
                 return NotFound();
             }
 
-            return genre;
+            //var genre = _mapper.Map<GenreDTO>(genreEntity);
+            return Ok(genre);
         }
 
         // PUT: api/Genres/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutGenre(long id, Genre genre)
+        public ActionResult<Genre> PutGenre([Bind("Id,Name")] Genre genre)
         {
-            if (id != genre.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(genre).State = EntityState.Modified;
-
             try
             {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!GenreExists(id))
+                if (!ModelState.IsValid)
                 {
-                    return NotFound();
+                    return BadRequest("Invalid model object");
                 }
-                else
-                {
-                    throw;
-                }
-            }
 
-            return NoContent();
+                _repo.Genres.Update(genre);
+  
+                _repo.SaveAsync();
+                return Ok(genre);
+            }
+            catch
+            {
+                return StatusCode(500, "Internal server error");
+            }
         }
 
         // POST: api/Genres
@@ -78,31 +78,31 @@ namespace LibraryAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<Genre>> PostGenre(Genre genre)
         {
-            _context.Genres.Add(genre);
-            await _context.SaveChangesAsync();
+            _repo.Genres.Create(genre);
+            await _repo.SaveAsync();
 
-            return CreatedAtAction("GetGenre", new { id = genre.Id }, genre);
+            return CreatedAtAction(nameof(GetGenre), new { id = genre.Id }, genre);
         }
 
         // DELETE: api/Genres/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteGenre(long id)
+        public async Task<IActionResult> DeleteGenre([FromRoute]long id)
         {
-            var genre = await _context.Genres.FindAsync(id);
+            var genre = await _repo.Genres.GetGenreByIdAsync(id);
             if (genre == null)
             {
                 return NotFound();
             }
 
-            _context.Genres.Remove(genre);
-            await _context.SaveChangesAsync();
+            _repo.Genres.Delete(genre);
+            await _repo.SaveAsync();
 
-            return NoContent();
+            return Ok();
         }
 
         private bool GenreExists(long id)
         {
-            return _context.Genres.Any(e => e.Id == id);
+            return _repo.Genres.FindAll().Any(e => e.Id == id);
         }
     }
 }

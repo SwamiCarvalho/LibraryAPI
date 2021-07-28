@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace LibraryAPI.DTOs
+namespace LibraryAPI.Models.DTOs
 {
-    public class BookDTO
+    public class BookDetailsDTO
     {
-
+        public long Id { get; set; }
         public string Title { get; set; }
         [DisplayName("Original Title")]
         public string? OgTitle { get; set; }
@@ -16,7 +13,8 @@ namespace LibraryAPI.DTOs
         public int PublicationYear { get; set; }
         public int? Edition { get; set; }
         public string? Notes { get; set; }
-        [DisplayName("Physical Description")]
-        public string Genres { get; set; }
+        public string? PhysicalDescription { get; set; }
+        public List<GenreDTO> Genres { get; set; }
+        public List<AuthorDTO> Authors { get; set; }
     }
 }

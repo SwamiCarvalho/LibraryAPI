@@ -1,7 +1,4 @@
 ﻿using LibraryAPI.Models;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using System;
 using System.Linq;
 
 namespace LibraryAPI.Data

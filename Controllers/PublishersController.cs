@@ -45,6 +45,7 @@ namespace LibraryAPI.Controllers
         // PUT: api/Publishers/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> PutPublisher(long id, Publisher publisher)
         {
             if (id != publisher.Id)
@@ -76,6 +77,7 @@ namespace LibraryAPI.Controllers
         // POST: api/Publishers
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<ActionResult<Publisher>> PostPublisher(Publisher publisher)
         {
             _context.Publishers.Add(publisher);
