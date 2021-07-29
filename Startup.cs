@@ -1,6 +1,4 @@
-using LibraryAPI.Data;
-using LibraryAPI.Interfaces;
-using LibraryAPI.Repository;
+using LibraryAPI.Persistence.Contexts;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -24,11 +22,9 @@ namespace LibraryAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<LibraryAPIDBContext>(options =>
+            services.AddDbContext<AppDbContext>(options =>
                                                 options.UseSqlServer(Configuration["ConnectionString:LibraryAPIDB"]));
 
-            // Create Repository Service
-            services.AddScoped<IRepositoryWrapper, RepositoryWrapper>();
 
             services.AddControllers();
 
@@ -53,8 +49,6 @@ namespace LibraryAPI
             app.UseHttpsRedirection();
 
             app.UseRouting();
-
-            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {

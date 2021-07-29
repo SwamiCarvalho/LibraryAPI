@@ -3,32 +3,37 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using LibraryAPI.Models;
+using LibraryAPI.Domain.Models;
 using System.Text.RegularExpressions;
-using LibraryAPI.Interfaces;
+using LibraryAPI.Domain.Services;
 using Microsoft.EntityFrameworkCore;
 using AutoMapper;
-using LibraryAPI.Models.DTOs;
+using LibraryAPI.Domain.Models.DTOs;
 
 namespace LibraryAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class BooksController : ControllerBase
+    public class BooksController : Controller
     {
-
-        private IRepositoryWrapper _repo;
+        private readonly IBookService _bookService;
         private IMapper _mapper;
         //private readonly ILogger<BooksController> _logger;
 
-        public BooksController(IRepositoryWrapper repo, IMapper mapper)
+        public BooksController(IBookService bookService, IMapper mapper)
         {
-            _repo = repo;
+            _bookService = bookService;
             _mapper = mapper;
         }
 
+        [HttpGet]
+        public async Task<IEnumerable<Book>> GetAllAsync()
+        {
+            var categories = await _bookService.ListAsync();
+            return categories;
+        }
 
-        // GET: api/Books
+        /*// GET: api/Books
         [HttpGet]
         public async Task<ActionResult<List<BookDTO>>> GetBooks([FromQuery] string searchTerm, [FromQuery] string genre, [FromQuery] string author)
         {
@@ -36,7 +41,7 @@ namespace LibraryAPI.Controllers
             {
                 if (!string.IsNullOrEmpty(searchTerm))
                 {
-                    var modelR = await _repo.Books.FindByCondition(b => searchTerm == null || b.Title.Contains(searchTerm) || b.OgTitle.Contains(searchTerm)).AsQueryable()
+                    var modelR = await _bookService.Books.FindByCondition(b => searchTerm == null || b.Title.Contains(searchTerm) || b.OgTitle.Contains(searchTerm)).AsQueryable()
                         .Include(b => b.BooksGenres)
                             .ThenInclude(bg => bg.Genre)
                         .Include(b => b.BooksAuthors)
@@ -49,7 +54,7 @@ namespace LibraryAPI.Controllers
                 // Get all Books when there is no filter
                 else if (searchTerm == null && genre == null && author == null)
                 {
-                    var modelR = _repo.Books.GetAllBooksWithDetails();
+                    var modelR = _bookService.Books.GetAllBooksWithDetails();
                     var model = _mapper.Map<List<BookDTO>>(modelR);
                     return Ok(model);
                 }
@@ -80,7 +85,7 @@ namespace LibraryAPI.Controllers
                         }
 
                         // Get Author Id by Name
-                        authorId = _repo.Authors
+                        authorId = _bookService.Authors
                             .FindByCondition(a => a.LastName.Equals(lastName) && a.FirstName.Equals(firstName) || author == null)
                             .Select(a => a.Id).AsQueryable().Single();
 
@@ -90,7 +95,7 @@ namespace LibraryAPI.Controllers
                     if (!string.IsNullOrEmpty(genre))
                     {
                         // Get Genre Id by Name
-                        genreId = _repo.Genres
+                        genreId = _bookService.Genres
                             .FindByCondition(g => g.Name.Equals(genre) || genre == null)
                             .Select(g => g.Id).AsQueryable().Single();
 
@@ -98,20 +103,20 @@ namespace LibraryAPI.Controllers
                     }
 
                     // Get All Books Where Conditions are satisfied
-                    var modelQuery = from b in _repo.Books.GetAllBooksWithDetails()
-                                     from bg in _repo.BooksGenres.FindAll()
+                    var modelQuery = from b in _bookService.Books.GetAllBooksWithDetails()
+                                     from bg in _bookService.BooksGenres.FindAll()
                                      where bg.GenreId == genreId || genreId == null
 
-                                     from ba in _repo.BooksAuthors.FindAll()
+                                     from ba in _bookService.BooksAuthors.FindAll()
                                      where ba.AuthorId == authorId || authorId == null
                                      where b.Id == bg.BookId && b.Id == ba.BookId
                                      select b;
 
                     var modelR = modelQuery.AsQueryable().Distinct()
-                                    /*.Include(b => b.BooksGenres)
+                                    *//*.Include(b => b.BooksGenres)
                                         .ThenInclude(bg => bg.Genre)
                                     .Include(b => b.BooksAuthors)
-                                        .ThenInclude(ba => ba.Author)*/.ToList();
+                                        .ThenInclude(ba => ba.Author)*//*.ToList();
 
                     var model = _mapper.Map<List<BookDTO>>(modelR);
                     return Ok(model);
@@ -137,7 +142,7 @@ namespace LibraryAPI.Controllers
                     NotFound();
                 }
 
-                var bookEntity = await _repo.Books.GetBookDetailsAsync(id);
+                var bookEntity = await _bookService.Books.GetBookDetailsAsync(id);
 
                 if (bookEntity == null)
                 {
@@ -170,8 +175,8 @@ namespace LibraryAPI.Controllers
                     return BadRequest("Invalid model object");
                 }
 
-                _repo.Books.Update(book);
-                _repo.SaveAsync();
+                _bookService.Books.Update(book);
+                _bookService.SaveAsync();
 
                 return Ok(book);
             }
@@ -187,8 +192,8 @@ namespace LibraryAPI.Controllers
         [HttpPost]
         public ActionResult<Book> CreateBook(Book book)
         {
-            _repo.Books.Create(book);
-            _repo.SaveAsync();
+            _bookService.Books.Create(book);
+            _bookService.SaveAsync();
 
             return CreatedAtAction(nameof(GetBookById), new { id = book.Id }, book);
         }
@@ -200,21 +205,21 @@ namespace LibraryAPI.Controllers
         {
             try
             {
-                var book = await _repo.Books.GetBookByIdAsync(id);
+                var book = await _bookService.Books.GetBookByIdAsync(id);
                 if (book == null)
                 {
                     return NotFound();
                 }
 
-                //_repo.Books.Delete(book);
-                //await _repo.SaveAsync();
+                //_bookService.Books.Delete(book);
+                //await _bookService.SaveAsync();
                 return NoContent();
             }
             catch
             {
                 return StatusCode(500, "Internal server error");
             }
-        }
+        }*/
 
 
         /*// DELETE: api/Books/5
@@ -224,14 +229,14 @@ namespace LibraryAPI.Controllers
         {
             try
             {
-                var book = await _repo.Books.GetBookByIdAsync(id);
+                var book = await _bookService.Books.GetBookByIdAsync(id);
 
                 if (book == null)
                 {
                     return NotFound();
                 }
-                _repo.Books.Delete(book);
-                await _repo.SaveAsync();
+                _bookService.Books.Delete(book);
+                await _bookService.SaveAsync();
                 return NoContent();
             }
             catch

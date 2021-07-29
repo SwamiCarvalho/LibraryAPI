@@ -1,4 +1,5 @@
 using LibraryAPI.Data;
+using LibraryAPI.Persistence.Contexts;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -28,7 +29,7 @@ namespace LibraryAPI
                 try
                 {
                     // Get a database context instance from the dependency injection container.
-                    var context = services.GetRequiredService<LibraryAPIDBContext>();
+                    var context = services.GetRequiredService<AppDbContext>();
                     // Call the SeedData.Initialize method to seed Database
                     SeedData.Initialize(context);
                 }

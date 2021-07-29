@@ -5,23 +5,34 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using LibraryAPI.Models;
-using LibraryAPI.Data;
+using LibraryAPI.Domain.Models;
+using LibraryAPI.Domain.Services;
+using AutoMapper;
 
 namespace LibraryAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class PublishersController : ControllerBase
+    public class PublishersController : Controller
     {
-        private readonly LibraryAPIDBContext _context;
+        private readonly IPublisherService _publisherService;
+        private IMapper _mapper;
+        //private readonly ILogger<BooksController> _logger;
 
-        public PublishersController(LibraryAPIDBContext context)
+        public PublishersController(IPublisherService publisherService, IMapper mapper)
         {
-            _context = context;
+            _publisherService = publisherService;
+            _mapper = mapper;
         }
 
-        // GET: api/Publishers
+        [HttpGet]
+        public async Task<IEnumerable<Publisher>> GetAllAsync()
+        {
+            var publishers = await _publisherService.ListAsync();
+            return publishers;
+        }
+
+        /*// GET: api/Publishers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Publisher>>> GetPublishers()
         {
@@ -105,6 +116,6 @@ namespace LibraryAPI.Controllers
         private bool PublisherExists(long id)
         {
             return _context.Publishers.Any(e => e.Id == id);
-        }
+        }*/
     }
 }

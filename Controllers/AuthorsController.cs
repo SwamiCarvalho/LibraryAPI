@@ -3,35 +3,41 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using LibraryAPI.Models;
-using LibraryAPI.Interfaces;
+using LibraryAPI.Domain.Models;
+using LibraryAPI.Domain.Services;
 
 namespace LibraryAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AuthorsController : ControllerBase
+    public class AuthorsController : Controller
     {
-        //private readonly LibraryAPIDBContext _repo;
-        private IRepositoryWrapper _repo;
+        private readonly IAuthorService _authorService;
 
-        public AuthorsController(IRepositoryWrapper repo)
+        public AuthorsController(IAuthorService authorService)
         {
-            _repo = repo;
+            _authorService = authorService;
         }
 
-        // GET: api/Authors
+        [HttpGet]
+        public async Task<IEnumerable<Author>> GetAllAsync()
+        {
+            var authors = await _authorService.ListAsync();
+            return authors;
+        }
+
+        /*// GET: api/Authors
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Author>>> GetAuthors()
         {
-            return await _repo.Authors.FindAll().ToListAsync();
+            return await _authorService.Authors.FindAll().ToListAsync();
         }
 
         // GET: api/Authors/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Author>> GetAuthor(long id)
         {
-            var author = await _repo.Authors.GetAuthorByIdAsync(id);
+            var author = await _authorService.Authors.GetAuthorByIdAsync(id);
 
             if (author == null)
             {
@@ -51,11 +57,11 @@ namespace LibraryAPI.Controllers
                 return BadRequest();
             }
 
-            var authorEntity = await _repo.Authors.GetAuthorByIdAsync(id);
+            var authorEntity = await _authorService.Authors.GetAuthorByIdAsync(id);
 
             try
             {
-                await _repo.SaveAsync();
+                await _authorService.SaveAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -77,8 +83,8 @@ namespace LibraryAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<Author>> PostAuthor(Author author)
         {
-            _repo.Authors.Create(author);
-            await _repo.SaveAsync();
+            _authorService.Authors.Create(author);
+            await _authorService.SaveAsync();
 
             return CreatedAtAction("GetAuthor", new { id = author.Id }, author);
         }
@@ -87,21 +93,21 @@ namespace LibraryAPI.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAuthor(long id)
         {
-            var author = await _repo.Authors.GetAuthorByIdAsync(id);
+            var author = await _authorService.Authors.GetAuthorByIdAsync(id);
             if (author == null)
             {
                 return NotFound();
             }
 
-            _repo.Authors.Delete(author);
-            await _repo.SaveAsync();
+            _authorService.Authors.Delete(author);
+            await _authorService.SaveAsync();
 
             return NoContent();
         }
 
         private bool AuthorExists(long id)
         {
-            return _repo.Authors.FindAll().Any(e => e.Id == id);
-        }
+            return _authorService.Authors.FindAll().Any(e => e.Id == id);
+        }*/
     }
 }

@@ -2,31 +2,39 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using LibraryAPI.Models;
-using LibraryAPI.Interfaces;
-using LibraryAPI.Models.DTOs;
+using LibraryAPI.Domain.Models;
+using LibraryAPI.Domain.Services;
+using LibraryAPI.Domain.Models.DTOs;
 using AutoMapper;
 
 namespace LibraryAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class GenresController : ControllerBase
+    public class GenresController : Controller
     {
-        private readonly IRepositoryWrapper _repo;
+        private readonly IGenreService _genreService;
         private IMapper _mapper;
+        //private readonly ILogger<BooksController> _logger;
 
-        public GenresController(IRepositoryWrapper repo, IMapper mapper)
+        public GenresController(IGenreService genreService, IMapper mapper)
         {
-            _repo = repo;
+            _genreService = genreService;
             _mapper = mapper;
         }
 
-        // GET: api/Genres
+        [HttpGet]
+        public async Task<IEnumerable<Genre>> GetAllAsync()
+        {
+            var categories = await _genreService.ListAsync();
+            return categories;
+        }
+
+        /*// GET: api/Genres
         [HttpGet]
         public ActionResult<IEnumerable<Genre>> GetGenres()
         {
-            var genre = _repo.Genres.FindAll().OrderBy(g => g.Name).ToList();
+            var genre = _genreService.FindAll().OrderBy(g => g.Name).ToList();
             return Ok(genre);
         }
 
@@ -103,6 +111,6 @@ namespace LibraryAPI.Controllers
         private bool GenreExists(long id)
         {
             return _repo.Genres.FindAll().Any(e => e.Id == id);
-        }
+        }*/
     }
 }
