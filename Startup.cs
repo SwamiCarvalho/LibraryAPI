@@ -1,4 +1,6 @@
+using LibraryAPI.Domain.Repositories;
 using LibraryAPI.Persistence.Contexts;
+using LibraryAPI.Repository;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -27,6 +29,8 @@ namespace LibraryAPI
 
 
             services.AddControllers();
+
+            services.AddScoped<IRepositoryWrapper, RepositoryWrapper>();
 
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 

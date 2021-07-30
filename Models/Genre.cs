@@ -6,9 +6,8 @@ namespace LibraryAPI.Models
     public class Genre
     {
 
-        public long Id { get; set; }
-        [Required]
+        public int GenreId { get; set; }
         public string Name { get; set; }
-        public virtual ICollection<BooksGenres> BooksGenres { get; set; }
+        public IList<Book> Books { get; set; }
     }
 }

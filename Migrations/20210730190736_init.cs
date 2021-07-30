@@ -2,7 +2,7 @@
 
 namespace LibraryAPI.Migrations
 {
-    public partial class _29_07_21 : Migration
+    public partial class init : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

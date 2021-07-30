@@ -9,7 +9,7 @@ using LibraryAPI.Persistence.Contexts;
 
 namespace LibraryAPI.Repository
 {
-    public class GenreRepository : BaseRepository, IGenreRepository
+    public class GenreRepository : RepositoryBase<Genre>, IGenreRepository
     {
 
 
@@ -17,7 +17,7 @@ namespace LibraryAPI.Repository
 
         public async Task<IEnumerable<Genre>> ListAsync()
         {
-            return await _context.Genres.ToListAsync();
+            return await FindAll().ToListAsync();
         }
 
         /*public async Task<Genre> GetGenreByIdAsync(long? id)

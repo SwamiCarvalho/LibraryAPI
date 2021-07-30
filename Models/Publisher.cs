@@ -5,11 +5,9 @@ namespace LibraryAPI.Models
 {
     public class Publisher
     {
-        public long Id { get; set; }
-        [Required]
+        public int PublisherId { get; set; }
         public string Name { get; set; }
-        [Required]
         public string Location { get; set; }
-        public virtual ICollection<Book> Books { get; set; }
+        public IList<Book> Books { get; set; }
     }
 }

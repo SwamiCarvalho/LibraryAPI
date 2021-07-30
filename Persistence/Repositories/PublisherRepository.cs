@@ -8,14 +8,14 @@ using System.Threading.Tasks;
 
 namespace LibraryAPI.Persistence.Repositories
 {
-    public class PublisherRepository : BaseRepository, IPublisherRepository
+    public class PublisherRepository : RepositoryBase<Publisher>, IPublisherRepository
     {
 
         public PublisherRepository(AppDbContext context) : base(context) { }
 
         public async Task<IEnumerable<Publisher>> ListAsync()
         {
-            return await _context.Publishers.ToListAsync();
+            return await FindAll().ToListAsync();
         }
 
         /*public async Task<Author> GetPublisherByIdAsync(long id)

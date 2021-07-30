@@ -9,14 +9,14 @@ using System.Threading.Tasks;
 
 namespace LibraryAPI.Persistence.Repositories
 {
-    public class BookRepository : BaseRepository, IBookRepository
+    public class BookRepository : RepositoryBase<Book>, IBookRepository
     {
 
         public  BookRepository(AppDbContext context) : base(context) { }
 
         public async Task<IEnumerable<Book>> ListAsync()
         {
-            return await _context.Books.ToListAsync();
+            return await FindAll().ToListAsync();
         }
 
         /*public IEnumerable<Book> GetAllBooks()

@@ -9,14 +9,14 @@ using System.Threading.Tasks;
 
 namespace LibraryAPI.Persistence.Repositories
 {
-    public class AuthorRepository : BaseRepository, IAuthorRepository
+    public class AuthorRepository : RepositoryBase<Author>, IAuthorRepository
     {
 
         public AuthorRepository(AppDbContext context) : base(context){ }
 
         public async Task<IEnumerable<Author>> ListAsync()
         {
-            return await _context.Authors.ToListAsync();
+            return await FindAll().ToListAsync();
         }
 
         /*public async Task<Author> GetAuthorByIdAsync(long id)
