@@ -14,9 +14,9 @@ namespace LibraryAPI.Services
 
         public readonly IAuthorRepository _authorRepository;
 
-        public AuthorService(IAuthorRepository authorRepository)
+        public AuthorService(IRepositoryWrapper repositoryWrapper)
         {
-            this._authorRepository = authorRepository;
+            this._authorRepository = repositoryWrapper.Authors;
         }
 
         public async Task<IEnumerable<Author>> ListAsync()

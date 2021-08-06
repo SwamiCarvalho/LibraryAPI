@@ -53,7 +53,7 @@ namespace LibraryAPI.Migrations
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Title = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     OgTitle = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     PublicationYear = table.Column<int>(type: "int", nullable: false),
                     Edition = table.Column<int>(type: "int", nullable: true),

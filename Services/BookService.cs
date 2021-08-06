@@ -5,6 +5,9 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Supermarket.API.Domain.Services.Communication;
+using Supermarket.API.Domain.Repositories;
+using System;
 
 namespace LibraryAPI.Services
 {
@@ -12,15 +15,32 @@ namespace LibraryAPI.Services
     {
 
         public readonly IBookRepository _bookRepository;
+        public readonly IUnitOfWork _unitOfWork;
 
-        public BookService(IBookRepository bookRepository)
+        public BookService(IRepositoryWrapper repositoryWrapper, IUnitOfWork unitOfWork)
         {
-            this._bookRepository = bookRepository;
+            _bookRepository = repositoryWrapper.Books;
+            _unitOfWork = unitOfWork;
         }
 
-        public async Task<IEnumerable<Book>> ListAsync()
+        public async Task<IEnumerable<Book>> GetAllBooksAsync()
         {
             return await _bookRepository.ListAsync();
+        }
+
+        public async Task<SaveBookResponse> SaveBookAsync(Book book)
+        {
+            try
+            {
+                await _bookRepository.AddAsync(book);
+                await _unitOfWork.CompleteAsync();
+
+                return new SaveBookResponse(book);
+            }
+            catch (Exception ex)
+            {
+                return new SaveBookResponse($"An error occurred when saving the category: {ex.Message}");
+            }
         }
 
         /*public IEnumerable<Book> GetAllBooks()

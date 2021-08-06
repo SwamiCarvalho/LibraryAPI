@@ -11,6 +11,5 @@ namespace LibraryAPI.Domain.Repositories
         IAuthorRepository Authors { get; }
         IGenreRepository Genres { get; }
         IPublisherRepository Publishers { get; }
-        Task SaveAsync();
     }
 }

@@ -13,9 +13,9 @@ namespace LibraryAPI.Services
 
         public readonly IGenreRepository _genreRepository;
 
-        public GenreService(IGenreRepository genreRepository)
+        public GenreService(IRepositoryWrapper repositoryWrapper)
         {
-            this._genreRepository = genreRepository;
+            this._genreRepository = repositoryWrapper.Genres;
         }
         public async Task<IEnumerable<Genre>> ListAsync()
         {

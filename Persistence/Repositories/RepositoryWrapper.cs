@@ -69,10 +69,5 @@ namespace LibraryAPI.Repository
         {
             _repoContext = repositoryContext;
         }
-
-        public async Task SaveAsync()
-        {
-            await _repoContext.SaveChangesAsync();
-        }
     }
 }

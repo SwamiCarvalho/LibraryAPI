@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using LibraryAPI.Domain.Models;
 using LibraryAPI.Domain.Services;
+using AutoMapper;
+using LibraryAPI.Resources;
 
 namespace LibraryAPI.Controllers
 {
@@ -13,17 +15,20 @@ namespace LibraryAPI.Controllers
     public class AuthorsController : Controller
     {
         private readonly IAuthorService _authorService;
+        private readonly IMapper _mapper;
 
-        public AuthorsController(IAuthorService authorService)
+        public AuthorsController(IAuthorService authorService, IMapper mapper)
         {
             _authorService = authorService;
+            _mapper = mapper;
         }
 
         [HttpGet]
-        public async Task<IEnumerable<Author>> GetAllAsync()
+        public async Task<IEnumerable<AuthorResource>> GetAllAsync()
         {
             var authors = await _authorService.ListAsync();
-            return authors;
+            var resources = _mapper.Map<IEnumerable<Author>, IEnumerable<AuthorResource>>(authors);
+            return resources;
         }
 
         /*// GET: api/Authors

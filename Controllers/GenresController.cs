@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using LibraryAPI.Domain.Models;
 using LibraryAPI.Domain.Services;
-using LibraryAPI.Domain.Models.DTOs;
 using AutoMapper;
 
 namespace LibraryAPI.Controllers

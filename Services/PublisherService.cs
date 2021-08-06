@@ -11,9 +11,9 @@ namespace LibraryAPI.Services
     public class PublisherService : IPublisherService
     {
         private readonly IPublisherRepository _publisherRepository;
-        public PublisherService(IPublisherRepository publisherRepository)
+        public PublisherService(IRepositoryWrapper repositoryWrapper)
         {
-            this._publisherRepository = publisherRepository;
+            this._publisherRepository = repositoryWrapper.Publishers;
         }
 
         public async Task<IEnumerable<Publisher>> ListAsync()

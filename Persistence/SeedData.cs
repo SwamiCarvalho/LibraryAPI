@@ -1,4 +1,4 @@
-﻿using LibraryAPI.Models;
+﻿using LibraryAPI.Domain.Models;
 using LibraryAPI.Persistence.Contexts;
 using System.Linq;
 
@@ -8,7 +8,7 @@ namespace LibraryAPI.Data
     {
         public static void Initialize(AppDbContext context)
         {
-            /*// Automatically creates the database
+            // Automatically creates the database
             context.Database.EnsureCreated();
 
             /////////////////////// PUBLISHERS ///////////////////////
@@ -80,7 +80,7 @@ namespace LibraryAPI.Data
                 PublicationYear = 2009,
                 Edition = 4,
                 PhysicalDescription = "263 p. ; 24 cm",
-                PublisherId = publishers.Single(p => p.Name == "Dom Quixote").Id
+                Publisher = publishers.Single(p => p.Name == "Dom Quixote")
             };
 
             var intuition_osho = new Book
@@ -89,7 +89,7 @@ namespace LibraryAPI.Data
                 OgTitle = "Intuition: knowing beyond logic",
                 PublicationYear = 2006,
                 PhysicalDescription = "196 p. ; 22 cm",
-                PublisherId = publishers.Single(p => p.Name == "Sábado").Id
+                Publisher = publishers.Single(p => p.Name == "Sábado")
             };
 
             var creativity_osho = new Book
@@ -101,7 +101,7 @@ namespace LibraryAPI.Data
             context.Books.AddRange(blink_gladwell, intuition_osho, creativity_osho);
             context.SaveChanges();
 
-            ////////// SEED AuthorBook /////////////
+            /*////////// SEED AuthorBook /////////////
 
             // Look for any Books.
             if (context.BooksAuthors.Any())
@@ -116,7 +116,7 @@ namespace LibraryAPI.Data
                 new BooksAuthors { BookId = creativity_osho.Id, AuthorId = osho.Id }
             };
 
-            *//*foreach (BooksAuthors bookAuthor in booksAuthors)
+            foreach (BooksAuthors bookAuthor in booksAuthors)
             {
                 var booksAuthorsInDB = context.BooksAuthors.Where(
                     b =>
@@ -127,8 +127,8 @@ namespace LibraryAPI.Data
                 {
                     context.BooksAuthors.Add(bookAuthor);
                 }
-                
-            }*//*
+
+            }
             foreach (BooksAuthors bookAuthor in booksAuthors)
             {
                 context.BooksAuthors.Add(bookAuthor);
@@ -156,7 +156,7 @@ namespace LibraryAPI.Data
                 context.BooksGenres.Add(bookGenres);
             }
             context.SaveChanges();
-            *//*foreach (BooksGenres bookGenres in booksGenres)
+            foreach (BooksGenres bookGenres in booksGenres)
             {
                 var booksGenresInDB = context.BooksGenres.Where(
                     b =>

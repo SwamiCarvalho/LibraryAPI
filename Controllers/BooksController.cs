@@ -8,7 +8,8 @@ using System.Text.RegularExpressions;
 using LibraryAPI.Domain.Services;
 using Microsoft.EntityFrameworkCore;
 using AutoMapper;
-using LibraryAPI.Domain.Models.DTOs;
+using LibraryAPI.Resources;
+using Supermarket.API.Extensions;
 
 namespace LibraryAPI.Controllers
 {
@@ -17,7 +18,7 @@ namespace LibraryAPI.Controllers
     public class BooksController : Controller
     {
         private readonly IBookService _bookService;
-        private IMapper _mapper;
+        private readonly IMapper _mapper;
         //private readonly ILogger<BooksController> _logger;
 
         public BooksController(IBookService bookService, IMapper mapper)
@@ -27,10 +28,28 @@ namespace LibraryAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<IEnumerable<Book>> GetAllAsync()
+        public async Task<IEnumerable<BookResource>> GetAllBooks()
         {
-            var categories = await _bookService.ListAsync();
-            return categories;
+            var categories = await _bookService.GetAllBooksAsync();
+            var resources = _mapper.Map<IEnumerable<Book>, IEnumerable<BookResource>>(categories);
+
+            return resources;
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddBook([FromBody] SaveBookResource resource)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState.GetErrorMessages());
+
+            var book = _mapper.Map<SaveBookResource, Book>(resource);
+            var result = await _bookService.SaveBookAsync(book);
+
+            if (!result.Success)
+                return BadRequest(result.Message);
+
+            var bookResource = _mapper.Map<Book, BookResource>(book);
+            return Ok(bookResource);
         }
 
         /*// GET: api/Books

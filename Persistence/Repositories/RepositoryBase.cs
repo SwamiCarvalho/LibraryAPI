@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
 
 namespace LibraryAPI.Persistence.Repositories
 {
@@ -46,7 +47,5 @@ namespace LibraryAPI.Persistence.Repositories
         {
             this.RepositoryContext.Set<T>().Remove(entity);
         }
-
-        
     }
 }

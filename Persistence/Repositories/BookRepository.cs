@@ -19,6 +19,11 @@ namespace LibraryAPI.Persistence.Repositories
             return await FindAll().ToListAsync();
         }
 
+        public async Task AddAsync(Book book)
+        {
+            await AddAsync(book);
+        }
+
         /*public IEnumerable<Book> GetAllBooks()
         {
             return FindAll()

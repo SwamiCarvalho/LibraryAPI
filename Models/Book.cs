@@ -15,7 +15,6 @@ namespace LibraryAPI.Models
         public int? Edition { get; set; }
         public string? Notes { get; set; }
         public string? PhysicalDescription { get; set; }
-        public int PublirId { get; set; }
         public Publisher Publisher { get; set; }
         public IList<Author> Authors { get; set; }
         public IList<Genre> Genres { get; set; }

@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace LibraryAPI.Domain.Models.DTOs
+namespace LibraryAPI.Resources
 {
-    public class GenreDTO
+    public class GenreResource
     {
         public long Id { get; set; }
         public string Name { get; set; }

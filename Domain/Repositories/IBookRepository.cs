@@ -7,6 +7,7 @@ namespace LibraryAPI.Domain.Repositories
     public interface IBookRepository
     {
         Task<IEnumerable<Book>> ListAsync();
+        Task AddAsync(Book book);
         /*IEnumerable<Book> GetAllBooks();
         IEnumerable<Book> GetAllBooksWithDetails();
         Task<Book> GetBookByIdAsync(long id);

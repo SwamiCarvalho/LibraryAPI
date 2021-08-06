@@ -9,6 +9,13 @@ namespace LibraryAPI.Domain.Models
         public string FirstName { get; set; }
         public string? LastName { get; set; }
         public IList<Book> Books { get; set; }
+        public string FullName
+        {
+            get
+            {
+                return FirstName + " " + LastName;
+            }
+        }
 
     }
 }

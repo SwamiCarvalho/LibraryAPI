@@ -4,9 +4,9 @@ using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace LibraryAPI.Domain.Models.DTOs
+namespace LibraryAPI.Resources
 {
-    public class AuthorDTO
+    public class AuthorResource
     {
         public long Id { get; set; }
         [DisplayName("First Name")]   
@@ -14,12 +14,7 @@ namespace LibraryAPI.Domain.Models.DTOs
         [DisplayName("Last Name")]
         public string? LastName { get; set; }
 
-        public string FullName
-        { get
-            {
-                return FirstName + " " + LastName; 
-            } 
-        }
+        public string FullName { get; set; }
             
         
     }  

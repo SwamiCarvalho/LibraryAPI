@@ -1,13 +1,18 @@
 using LibraryAPI.Domain.Repositories;
+using LibraryAPI.Domain.Services;
 using LibraryAPI.Persistence.Contexts;
 using LibraryAPI.Repository;
+using LibraryAPI.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using Supermarket.API.Domain.Repositories;
+using Supermarket.API.Persistence.Repositories;
 using System;
 
 namespace LibraryAPI
@@ -24,15 +29,24 @@ namespace LibraryAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddMvc();
+
             services.AddDbContext<AppDbContext>(options =>
                                                 options.UseSqlServer(Configuration["ConnectionString:LibraryAPIDB"]));
 
-
-            services.AddControllers();
-
+            // Repository Services 
             services.AddScoped<IRepositoryWrapper, RepositoryWrapper>();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
 
+            // Services
+            services.AddScoped<IAuthorService, AuthorService>();
+            services.AddScoped<IBookService, BookService>();
+            services.AddScoped<IGenreService, GenreService>();
+            services.AddScoped<IPublisherService, PublisherService>();
+
+            // Automapper Service
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
 
             services.AddSwaggerGen(c =>
             {
@@ -53,6 +67,8 @@ namespace LibraryAPI
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            //app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {

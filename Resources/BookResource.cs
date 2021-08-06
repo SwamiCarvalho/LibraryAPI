@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
 
-namespace LibraryAPI.Domain.Models.DTOs
+namespace LibraryAPI.Resources
 {
-    public class BookDTO
+    public class BookResource
     {
         public long Id { get; set; }
         public string Title { get; set; }
@@ -12,7 +12,7 @@ namespace LibraryAPI.Domain.Models.DTOs
         [DisplayName("Publication Year")]
         public int PublicationYear { get; set; }
         public int? Edition { get; set; }
-        public List<GenreDTO> Genres { get; set; }
-        public List<AuthorDTO> Authors { get; set; }
+        public List<GenreResource> Genres { get; set; }
+        public List<AuthorResource> Authors { get; set; }
     }
 }
