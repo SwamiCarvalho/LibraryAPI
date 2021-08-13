@@ -19,9 +19,24 @@ namespace LibraryAPI.Persistence.Repositories
             return await FindAll().ToListAsync();
         }
 
-        /*public async Task<Author> GetAuthorByIdAsync(long id)
+        public void AddAuthor(Author author)
         {
-            return await _context.FindByCondition(a => a.Id == id).FirstOrDefaultAsync();
-        }*/
+            Create(author);
+        }
+
+        public void UpdateAuthor(Author author)
+        {
+            Update(author);
+        }
+        
+        public void DeleteAuthor(Author author)
+        {
+            Delete(author);
+        }
+
+        public async Task<Author> GetAuthorByIdAsync(long id)
+        {
+            return await FindByCondition(a => a.AuthorId == id).FirstOrDefaultAsync();
+        }
     }
 }

@@ -5,6 +5,7 @@
     <OutputType>Exe</OutputType>
     <Authors>Miguel Carvalho</Authors>
     <Company>IPBeja</Company>
+    <StartupObject>LibraryAPI.Program</StartupObject>
   </PropertyGroup>
 
   <ItemGroup>

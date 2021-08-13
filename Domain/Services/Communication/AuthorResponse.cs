@@ -2,21 +2,21 @@
 
 namespace Supermarket.API.Domain.Services.Communication
 {
-    public class SaveBookResponse : BaseResponse
+    public class AuthorResponse : BaseResponse
     {
-        public Book Book { get; private set; }
+        public Author Author { get; private set; }
 
-        private SaveBookResponse(bool success, string message, Book book) : base(success, message)
+        private AuthorResponse(bool success, string message, Author author) : base(success, message)
         {
-            Book = book;
+            Author = author;
         }
 
         /// <summary>
         /// Creates a success response.
         /// </summary>
-        /// <param name="book">Saved category.</param>
+        /// <param name="author">Saved category.</param>
         /// <returns>Response.</returns>
-        public SaveBookResponse(Book book) : this(true, string.Empty, book)
+        public AuthorResponse(Author author) : this(true, string.Empty, author)
         { }
 
         /// <summary>
@@ -24,7 +24,7 @@ namespace Supermarket.API.Domain.Services.Communication
         /// </summary>
         /// <param name="message">Error message.</param>
         /// <returns>Response.</returns>
-        public SaveBookResponse(string message) : this(false, message, null)
+        public AuthorResponse(string message) : this(false, message, null)
         { }
     }
 }

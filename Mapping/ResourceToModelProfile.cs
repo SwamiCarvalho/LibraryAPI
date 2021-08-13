@@ -10,6 +10,8 @@ namespace LibraryAPI.Utils
         public ResourceToModelProfile()
         {
             CreateMap<SaveBookResource, Book>();
+            CreateMap<SaveAuthorResource, Author>();
+            CreateMap<SaveGenreResource, Genre>();
             CreateMap<AuthorResource, Author>();
             CreateMap<GenreResource, Genre>();
 

@@ -28,19 +28,79 @@ namespace LibraryAPI.Services
             return await _bookRepository.ListAsync();
         }
 
-        public async Task<SaveBookResponse> SaveBookAsync(Book book)
+        public async Task<BookResponse> SaveBookAsync(Book book)
         {
             try
             {
-                await _bookRepository.AddAsync(book);
+                _bookRepository.AddBook(book);
                 await _unitOfWork.CompleteAsync();
-
-                return new SaveBookResponse(book);
+                return new BookResponse(book);
             }
             catch (Exception ex)
             {
-                return new SaveBookResponse($"An error occurred when saving the category: {ex.Message}");
+                return new BookResponse($"An error occurred when saving the category: {ex.Message}");
             }
+        }
+
+        public async Task<BookResponse> UpdateBookAsync(long id, Book book)
+        {
+            var existingBook = await _bookRepository.GetBookByIdAsync(id);
+
+            if (existingBook == null)
+                return new BookResponse("Book not found.");
+
+            existingBook.Title = book.Title;
+            existingBook.OgTitle = book.OgTitle;
+            existingBook.PublicationYear = book.PublicationYear;
+            existingBook.Edition = book.Edition;
+            existingBook.Notes = book.Notes;
+            existingBook.PhysicalDescription = book.PhysicalDescription;
+            existingBook.Publisher = book.Publisher;
+            existingBook.Authors = book.Authors;
+            existingBook.Genres = book.Genres;
+
+            try
+            {
+                _bookRepository.UpdateBook(existingBook);
+                await _unitOfWork.CompleteAsync();
+
+                return new BookResponse(existingBook);
+            }
+            catch (Exception ex)
+            {
+                return new BookResponse($"An error occurred when updating the book: {ex.Message}");
+            }
+        }
+
+        public async Task<BookResponse> DeleteBookAsync(int id)
+        {
+            var existingBook = await _bookRepository.GetBookByIdAsync(id);
+
+            if (existingBook == null)
+                return new BookResponse("Book not found.");
+
+            try
+            {
+                _bookRepository.DeleteBook(existingBook);
+                await _unitOfWork.CompleteAsync();
+
+                return new BookResponse(existingBook);
+            }
+            catch (Exception ex)
+            {
+                // Do some logging stuff
+                return new BookResponse($"An error occurred when deleting the book: {ex.Message}");
+            }
+        }
+
+        public async Task<BookResponse> GetBookByIdAsync(long id)
+        {
+            var book = await _bookRepository.GetBookByIdAsync(id);
+
+            if (book == null)
+                return new BookResponse("Book not found.");
+
+            return new BookResponse(book);
         }
 
         /*public IEnumerable<Book> GetAllBooks()
@@ -52,25 +112,20 @@ namespace LibraryAPI.Services
         public IEnumerable<Book> GetAllBooksWithDetails()
         {
             return FindAll()
-                .Include(b => b.BooksGenres)
-                    .ThenInclude(bg => bg.Genre)
-                .Include(b => b.BooksAuthors)
-                    .ThenInclude(ba => ba.Author)
+                .Include(b => b.BooksBooks)
+                    .ThenInclude(bg => bg.Book)
+                .Include(b => b.BooksBooks)
+                    .ThenInclude(ba => ba.Book)
                 .OrderBy(b => b.Title).ToList();
-        }
-
-        public async Task<Book> GetBookByIdAsync(long id)
-        {
-            return await FindByCondition(b => b.Id == id).FirstOrDefaultAsync();
         }
 
         public async Task<Book> GetBookDetailsAsync(long? id)
         {
             return await FindByCondition(b => b.Id == id).AsQueryable()
-                .Include(b => b.BooksGenres)
-                    .ThenInclude(bg => bg.Genre)
-                .Include(b => b.BooksAuthors)
-                    .ThenInclude(ba => ba.Author)
+                .Include(b => b.BooksBooks)
+                    .ThenInclude(bg => bg.Book)
+                .Include(b => b.BooksBooks)
+                    .ThenInclude(ba => ba.Book)
                 .OrderBy(b => b.Title).FirstOrDefaultAsync();
 
         }

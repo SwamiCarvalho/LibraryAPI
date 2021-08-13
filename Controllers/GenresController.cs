@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 using LibraryAPI.Domain.Models;
 using LibraryAPI.Domain.Services;
 using AutoMapper;
+using LibraryAPI.Resources;
+using Supermarket.API.Extensions;
 
 namespace LibraryAPI.Controllers
 {
@@ -23,10 +25,55 @@ namespace LibraryAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<IEnumerable<Genre>> GetAllAsync()
+        public async Task<IEnumerable<GenreResource>> GetAllAsync()
         {
-            var categories = await _genreService.ListAsync();
-            return categories;
+            var genres = await _genreService.ListAsync();
+            var resources = _mapper.Map<IEnumerable<Genre>, IEnumerable<GenreResource>>(genres);
+            return resources;
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> PostAsync([Bind(include: "GenreId, Name")][FromBody] SaveGenreResource resource)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState.GetErrorMessages());
+
+            var genre = _mapper.Map<SaveGenreResource, Genre>(resource);
+            var result = await _genreService.SaveGenreAsync(genre);
+
+            if (!result.Success)
+                return BadRequest(result.Message);
+
+            var genreResource = _mapper.Map<Genre, GenreResource>(result.Genre);
+            return Ok(genreResource);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutAsync(long id, [FromBody] SaveGenreResource resource)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState.GetErrorMessages());
+
+            var category = _mapper.Map<SaveGenreResource, Genre>(resource);
+            var result = await _genreService.UpdateGenreAsync(id, category);
+
+            if (!result.Success)
+                return BadRequest(result.Message);
+
+            var categoryResource = _mapper.Map<Genre, GenreResource>(result.Genre);
+            return Ok(categoryResource);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteAsync(int id)
+        {
+            var result = await _genreService.DeleteGenreAsync(id);
+
+            if (!result.Success)
+                return BadRequest(result.Message);
+
+            var genreResource = _mapper.Map<Genre, GenreResource>(result.Genre);
+            return Ok(genreResource);
         }
 
         /*// GET: api/Genres

@@ -1,5 +1,6 @@
 ﻿using LibraryAPI.Domain.Models;
 using LibraryAPI.Persistence.Contexts;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace LibraryAPI.Data
@@ -80,8 +81,13 @@ namespace LibraryAPI.Data
                 PublicationYear = 2009,
                 Edition = 4,
                 PhysicalDescription = "263 p. ; 24 cm",
-                Publisher = publishers.Single(p => p.Name == "Dom Quixote")
+                Publisher = publishers.Single(p => p.Name == "Dom Quixote"),
+                Genres = new List<Genre>(),
+                Authors = new List<Author>()
             };
+
+            blink_gladwell.Genres.Add(intuition);
+            blink_gladwell.Authors.Add(gladwell);
 
             var intuition_osho = new Book
             {
@@ -89,16 +95,41 @@ namespace LibraryAPI.Data
                 OgTitle = "Intuition: knowing beyond logic",
                 PublicationYear = 2006,
                 PhysicalDescription = "196 p. ; 22 cm",
-                Publisher = publishers.Single(p => p.Name == "Sábado")
+                Publisher = publishers.Single(p => p.Name == "Sábado"),
+                Genres = new List<Genre>(),
+                Authors = new List<Author>()
             };
+
+            intuition_osho.Genres.Add(personalDevelopment);
+            intuition_osho.Genres.Add(creativity);
+            intuition_osho.Authors.Add(osho);
+
 
             var creativity_osho = new Book
             {
                 Title = "Criatividade : libertar as forças interiores",
-                PublicationYear = 2006
+                PublicationYear = 2006,
+                Genres = new List<Genre>(),
+                Authors = new List<Author>()
             };
 
-            context.Books.AddRange(blink_gladwell, intuition_osho, creativity_osho);
+            creativity_osho.Genres.Add(creativity);
+            creativity_osho.Authors.Add(osho);
+
+            var piadas_999_secas = new Book
+            {
+                Title = "999 + 1 Piadas Ainda Mais Secas",
+                PublicationYear = 2006,
+                Genres = new List<Genre>(),
+                Authors = new List<Author>()
+            };
+
+            piadas_999_secas.Genres.Add(new Genre { Name = "Anedotas"});
+            piadas_999_secas.Authors.Add(new Author {FirstName = "Pedro", LastName="Pinto" });
+            piadas_999_secas.Authors.Add(new Author {FirstName = "Gonçalo", LastName="Castro" });
+            piadas_999_secas.Authors.Add(new Author {FirstName = "João", LastName="Ramalhinho" });
+
+            context.Books.AddRange(blink_gladwell, intuition_osho, creativity_osho, piadas_999_secas);
             context.SaveChanges();
 
             /*////////// SEED AuthorBook /////////////

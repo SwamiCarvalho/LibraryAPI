@@ -20,9 +20,21 @@ namespace LibraryAPI.Repository
             return await FindAll().ToListAsync();
         }
 
-        /*public async Task<Genre> GetGenreByIdAsync(long? id)
+        public void AddGenre(Genre genre)
         {
-            return await FindByCondition(g => g.Id == id).FirstOrDefaultAsync();
-        }*/
+            Create(genre);
+        }
+        public void UpdateGenre(Genre genre)
+        {
+            Update(genre);
+        }
+        public void DeleteGenre(Genre genre)
+        {
+            Delete(genre);
+        }
+        public async Task<Genre> GetGenreByIdAsync(long id)
+        {
+            return await FindByCondition(g => g.GenreId == id).FirstOrDefaultAsync();
+        }
     }
 }

@@ -10,8 +10,8 @@ namespace LibraryAPI.Utils
         public ModelToResourceProfile()
         {
             CreateMap<Book, BookResource>()
-                .ForMember(dto => dto.Genres, opt => opt.MapFrom(x => x.Genres.Select(y => y.Name).ToList()))
-                .ForMember(dto => dto.Authors, opt => opt.MapFrom(x => x.Authors.Select(y => y.FullName).ToList()));
+                .ForMember(dto => dto.Genres, opt => opt.MapFrom(x => x.Genres.ToList()))
+                .ForMember(dto => dto.Authors, opt => opt.MapFrom(x => x.Authors.ToList()));
 
             CreateMap<Book, BookDetailsResource>();
                 //.ForMember(dto => dto.Genres, opt => opt.MapFrom(x => x.BooksGenres.Select(y => y.Genre).ToList()))

@@ -8,7 +8,7 @@ namespace LibraryAPI.Resources
 {
     public class AuthorResource
     {
-        public long Id { get; set; }
+        public long AuthorId { get; set; }
         [DisplayName("First Name")]   
         public string FirstName { get; set; }
         [DisplayName("Last Name")]

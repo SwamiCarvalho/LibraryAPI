@@ -5,7 +5,7 @@ namespace LibraryAPI.Resources
 {
     public class BookResource
     {
-        public long Id { get; set; }
+        public long BookId { get; set; }
         public string Title { get; set; }
         [DisplayName("Original Title")]
         public string? OgTitle { get; set; }

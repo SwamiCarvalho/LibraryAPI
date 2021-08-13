@@ -5,7 +5,7 @@ namespace LibraryAPI.Domain.Models
 {
     public class Author
     {
-        public long Id { get; set; }
+        public long AuthorId { get; set; }
         public string FirstName { get; set; }
         public string? LastName { get; set; }
         public IList<Book> Books { get; set; }

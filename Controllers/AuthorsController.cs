@@ -7,6 +7,7 @@ using LibraryAPI.Domain.Models;
 using LibraryAPI.Domain.Services;
 using AutoMapper;
 using LibraryAPI.Resources;
+using Supermarket.API.Extensions;
 
 namespace LibraryAPI.Controllers
 {
@@ -31,18 +32,55 @@ namespace LibraryAPI.Controllers
             return resources;
         }
 
-        /*// GET: api/Authors
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Author>>> GetAuthors()
+        [HttpPost]
+        public async Task<IActionResult> PostAsync([FromBody] SaveAuthorResource resource)
         {
-            return await _authorService.Authors.FindAll().ToListAsync();
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState.GetErrorMessages());
+
+            var author = _mapper.Map<SaveAuthorResource, Author>(resource);
+            var result = await _authorService.SaveAuthorAsync(author);
+
+            if (!result.Success)
+                return BadRequest(result.Message);
+
+            var authorResource = _mapper.Map<Author, AuthorResource>(author);
+            return Ok(authorResource);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutAsync(long id, [FromBody] SaveAuthorResource resource)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState.GetErrorMessages());
+
+            var author = _mapper.Map<SaveAuthorResource, Author>(resource);
+            var result = await _authorService.UpdateAuthorAsync(id, author);
+
+            if (!result.Success)
+                return BadRequest(result.Message);
+
+            var authorResource = _mapper.Map<Author, AuthorResource>(result.Author);
+            return Ok(authorResource);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteAsync(int id)
+        {
+            var result = await _authorService.DeleteAuthorAsync(id);
+
+            if (!result.Success)
+                return BadRequest(result.Message);
+
+            var authorResource = _mapper.Map<Author, AuthorResource>(result.Author);
+            return Ok(authorResource);
         }
 
         // GET: api/Authors/5
-        [HttpGet("{id}")]
+        /*[HttpGet("{id}")]
         public async Task<ActionResult<Author>> GetAuthor(long id)
         {
-            var author = await _authorService.Authors.GetAuthorByIdAsync(id);
+            var author = await _authorService.GetAuthorByIdAsync(id);
 
             if (author == null)
             {
@@ -50,9 +88,9 @@ namespace LibraryAPI.Controllers
             }
 
             return author;
-        }
+        }*/
 
-        // PUT: api/Authors/5
+        /*// PUT: api/Authors/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         public async Task<IActionResult> PutAuthor(long id, Author author)

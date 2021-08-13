@@ -7,11 +7,14 @@ namespace LibraryAPI.Domain.Repositories
     public interface IBookRepository
     {
         Task<IEnumerable<Book>> ListAsync();
-        Task AddAsync(Book book);
-        /*IEnumerable<Book> GetAllBooks();
-        IEnumerable<Book> GetAllBooksWithDetails();
+        void AddBook(Book book);
+        void UpdateBook(Book book);
+        void DeleteBook(Book book);
         Task<Book> GetBookByIdAsync(long id);
-        Task<Book> GetBookDetailsAsync(long? id);
-        bool BookExists(long id);*/
+
+        //IEnumerable<Book> GetAllBooks();
+        //IEnumerable<Book> GetAllBooksWithDetails();
+        //Task<Book> GetBookDetailsAsync(long? id);
+        //bool BookExists(long id);
     }
 }

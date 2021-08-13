@@ -6,10 +6,11 @@ namespace LibraryAPI.Resources
 {
     public class SaveBookResource
     {
-        [Required]
+        [Required(ErrorMessage = "Please add the book title.")]
         public string Title { get; set; }
         [DisplayName("Original Title")]
         public string? OgTitle { get; set; }
+        [Required(ErrorMessage = "Please add the book publication year.")]
         [DisplayName("Publication Year")]
         public int PublicationYear { get; set; }
         public int? Edition { get; set; }

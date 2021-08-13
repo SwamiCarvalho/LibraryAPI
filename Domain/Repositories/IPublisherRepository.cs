@@ -7,6 +7,9 @@ namespace LibraryAPI.Domain.Repositories
     public interface IPublisherRepository
     {
         Task<IEnumerable<Publisher>> ListAsync();
-        //Task<Genre> GetPublisherByIdAsync(long? id);
+        void AddPublisher(Publisher publisher);
+        void UpdatePublisher(Publisher publisher);
+        void DeletePublisher(Publisher publisher);
+        Task<Publisher> GetPublisherByIdAsync(long id);
     }
 }

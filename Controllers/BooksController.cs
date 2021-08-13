@@ -28,21 +28,21 @@ namespace LibraryAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<IEnumerable<BookResource>> GetAllBooks()
+        public async Task<IEnumerable<BookResource>> GetAsync()
         {
-            var categories = await _bookService.GetAllBooksAsync();
-            var resources = _mapper.Map<IEnumerable<Book>, IEnumerable<BookResource>>(categories);
+            var books = await _bookService.GetAllBooksAsync();
+            var resources = _mapper.Map<IEnumerable<Book>, IEnumerable<BookResource>>(books);
 
             return resources;
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddBook([FromBody] SaveBookResource resource)
+        public async Task<IActionResult> PostAsync([FromBody] SaveBookResource saveBookResource)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState.GetErrorMessages());
 
-            var book = _mapper.Map<SaveBookResource, Book>(resource);
+            var book = _mapper.Map<SaveBookResource, Book>(saveBookResource);
             var result = await _bookService.SaveBookAsync(book);
 
             if (!result.Success)
@@ -52,41 +52,69 @@ namespace LibraryAPI.Controllers
             return Ok(bookResource);
         }
 
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutAsync(long id, [FromBody] SaveBookResource resource)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState.GetErrorMessages());
+
+            var book = _mapper.Map<SaveBookResource, Book>(resource);
+            var result = await _bookService.UpdateBookAsync(id, book);
+
+            if (!result.Success)
+                return BadRequest(result.Message);
+
+            var bookResource = _mapper.Map<Book, BookResource>(result.Book);
+            return Ok(bookResource);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteAsync(int id)
+        {
+            var result = await _bookService.DeleteBookAsync(id);
+
+            if (!result.Success)
+                return BadRequest(result.Message);
+
+            var bookResource = _mapper.Map<Book, BookResource>(result.Book);
+            return Ok(bookResource);
+        }
+
         /*// GET: api/Books
         [HttpGet]
-        public async Task<ActionResult<List<BookDTO>>> GetBooks([FromQuery] string searchTerm, [FromQuery] string genre, [FromQuery] string author)
+        public async Task<ActionResult<List<BookDTO>>> GetBooks([FromQuery] string searchTerm, [FromQuery] string book, [FromQuery] string book)
         {
             try
             {
                 if (!string.IsNullOrEmpty(searchTerm))
                 {
                     var modelR = await _bookService.Books.FindByCondition(b => searchTerm == null || b.Title.Contains(searchTerm) || b.OgTitle.Contains(searchTerm)).AsQueryable()
-                        .Include(b => b.BooksGenres)
-                            .ThenInclude(bg => bg.Genre)
-                        .Include(b => b.BooksAuthors)
-                            .ThenInclude(ba => ba.Author)
+                        .Include(b => b.BooksBooks)
+                            .ThenInclude(bg => bg.Book)
+                        .Include(b => b.BooksBooks)
+                            .ThenInclude(ba => ba.Book)
                         .ToListAsync();
 
                     var model = _mapper.Map<List<BookDTO>>(modelR);
                     return Ok(model);
                 }
                 // Get all Books when there is no filter
-                else if (searchTerm == null && genre == null && author == null)
+                else if (searchTerm == null && book == null && book == null)
                 {
                     var modelR = _bookService.Books.GetAllBooksWithDetails();
                     var model = _mapper.Map<List<BookDTO>>(modelR);
                     return Ok(model);
                 }
-                // Get all Books Filtered By Genre
+                // Get all Books Filtered By Book
                 else
                 {
 
-                    long? authorId = null;
-                    // If parameter Author Name is passed
-                    if (!string.IsNullOrEmpty(author))
+                    long? bookId = null;
+                    // If parameter Book Name is passed
+                    if (!string.IsNullOrEmpty(book))
                     {
-                        // Split Author Name Parameter
-                        string[] firstLastName = Regex.Split(author, " ");
+                        // Split Book Name Parameter
+                        string[] firstLastName = Regex.Split(book, " ");
 
                         // Get First Name from parameter
                         string firstName;
@@ -103,19 +131,19 @@ namespace LibraryAPI.Controllers
                             lastName = null;
                         }
 
-                        // Get Author Id by Name
-                        authorId = _bookService.Authors
-                            .FindByCondition(a => a.LastName.Equals(lastName) && a.FirstName.Equals(firstName) || author == null)
+                        // Get Book Id by Name
+                        bookId = _bookService.Books
+                            .FindByCondition(a => a.LastName.Equals(lastName) && a.FirstName.Equals(firstName) || book == null)
                             .Select(a => a.Id).AsQueryable().Single();
 
                     }
 
-                    long? genreId = null;
-                    if (!string.IsNullOrEmpty(genre))
+                    long? bookId = null;
+                    if (!string.IsNullOrEmpty(book))
                     {
-                        // Get Genre Id by Name
-                        genreId = _bookService.Genres
-                            .FindByCondition(g => g.Name.Equals(genre) || genre == null)
+                        // Get Book Id by Name
+                        bookId = _bookService.Books
+                            .FindByCondition(g => g.Name.Equals(book) || book == null)
                             .Select(g => g.Id).AsQueryable().Single();
 
 
@@ -123,19 +151,19 @@ namespace LibraryAPI.Controllers
 
                     // Get All Books Where Conditions are satisfied
                     var modelQuery = from b in _bookService.Books.GetAllBooksWithDetails()
-                                     from bg in _bookService.BooksGenres.FindAll()
-                                     where bg.GenreId == genreId || genreId == null
+                                     from bg in _bookService.BooksBooks.FindAll()
+                                     where bg.BookId == bookId || bookId == null
 
-                                     from ba in _bookService.BooksAuthors.FindAll()
-                                     where ba.AuthorId == authorId || authorId == null
+                                     from ba in _bookService.BooksBooks.FindAll()
+                                     where ba.BookId == bookId || bookId == null
                                      where b.Id == bg.BookId && b.Id == ba.BookId
                                      select b;
 
                     var modelR = modelQuery.AsQueryable().Distinct()
-                                    *//*.Include(b => b.BooksGenres)
-                                        .ThenInclude(bg => bg.Genre)
-                                    .Include(b => b.BooksAuthors)
-                                        .ThenInclude(ba => ba.Author)*//*.ToList();
+                                    *//*.Include(b => b.BooksBooks)
+                                        .ThenInclude(bg => bg.Book)
+                                    .Include(b => b.BooksBooks)
+                                        .ThenInclude(ba => ba.Book)*//*.ToList();
 
                     var model = _mapper.Map<List<BookDTO>>(modelR);
                     return Ok(model);

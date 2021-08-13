@@ -16,12 +16,28 @@ namespace LibraryAPI.Persistence.Repositories
 
         public async Task<IEnumerable<Book>> ListAsync()
         {
-            return await FindAll().ToListAsync();
+            return await FindAll()
+                .Include(g => g.Genres)
+                .Include(g => g.Authors).ToListAsync();
         }
 
-        public async Task AddAsync(Book book)
+        public void AddBook(Book book)
         {
-            await AddAsync(book);
+            Create(book);
+        }
+
+        public void UpdateBook(Book book)
+        {
+            Update(book);
+        }
+        public void DeleteBook(Book book)
+        {
+            Delete(book);
+        }
+
+        public async Task<Book> GetBookByIdAsync(long id)
+        {
+            return await FindByCondition(b => b.BookId == id).FirstOrDefaultAsync();
         }
 
         /*public IEnumerable<Book> GetAllBooks()
@@ -38,14 +54,9 @@ namespace LibraryAPI.Persistence.Repositories
                 .Include(b => b.BooksAuthors)
                     .ThenInclude(ba => ba.Author)
                 .OrderBy(b => b.Title).ToList();
-        }
+        }*/
 
-        public async Task<Book> GetBookByIdAsync(long id)
-        {
-            return await FindByCondition(b => b.Id == id).FirstOrDefaultAsync();
-        }
-
-        public async Task<Book> GetBookDetailsAsync(long? id)
+        /*public async Task<Book> GetBookDetailsAsync(long? id)
         {
             return await FindByCondition(b => b.Id == id).AsQueryable()
                 .Include(b => b.BooksGenres)

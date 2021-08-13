@@ -8,6 +8,8 @@ using Microsoft.EntityFrameworkCore;
 using LibraryAPI.Domain.Models;
 using LibraryAPI.Domain.Services;
 using AutoMapper;
+using Supermarket.API.Extensions;
+using LibraryAPI.Resources;
 
 namespace LibraryAPI.Controllers
 {
@@ -17,7 +19,7 @@ namespace LibraryAPI.Controllers
     {
         private readonly IPublisherService _publisherService;
         private IMapper _mapper;
-        //private readonly ILogger<BooksController> _logger;
+        //private readonly ILogger<PublishersController> _logger;
 
         public PublishersController(IPublisherService publisherService, IMapper mapper)
         {
@@ -30,6 +32,50 @@ namespace LibraryAPI.Controllers
         {
             var publishers = await _publisherService.ListAsync();
             return publishers;
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> PostAsync([FromBody] PublisherResource savePublisherResource)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState.GetErrorMessages());
+
+            var publisher = _mapper.Map<PublisherResource, Publisher>(savePublisherResource);
+            var result = await _publisherService.SavePublisherAsync(publisher);
+
+            if (!result.Success)
+                return BadRequest(result.Message);
+
+            var publisherResource = _mapper.Map<Publisher, PublisherResource>(publisher);
+            return Ok(publisherResource);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutAsync(long id, [FromBody] PublisherResource resource)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState.GetErrorMessages());
+
+            var publisher = _mapper.Map<PublisherResource, Publisher>(resource);
+            var result = await _publisherService.UpdatePublisherAsync(id, publisher);
+
+            if (!result.Success)
+                return BadRequest(result.Message);
+
+            var publisherResource = _mapper.Map<Publisher, PublisherResource>(result.Publisher);
+            return Ok(publisherResource);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteAsync(int id)
+        {
+            var result = await _publisherService.DeletePublisherAsync(id);
+
+            if (!result.Success)
+                return BadRequest(result.Message);
+
+            var publisherResource = _mapper.Map<Publisher, PublisherResource>(result.Publisher);
+            return Ok(publisherResource);
         }
 
         /*// GET: api/Publishers

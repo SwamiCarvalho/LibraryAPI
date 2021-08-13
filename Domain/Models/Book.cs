@@ -8,7 +8,7 @@ namespace LibraryAPI.Domain.Models
 {
     public class Book
     {
-        public long Id { get; set; }
+        public long BookId { get; set; }
         public string Title { get; set; }
         public string? OgTitle { get; set; }
         public int PublicationYear { get; set; }

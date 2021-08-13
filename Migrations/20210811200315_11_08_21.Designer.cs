@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LibraryAPI.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20210803201736_init")]
-    partial class init
+    [Migration("20210811200315_11_08_21")]
+    partial class _11_08_21
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -23,37 +23,37 @@ namespace LibraryAPI.Migrations
 
             modelBuilder.Entity("AuthorBook", b =>
                 {
-                    b.Property<long>("AuthorsId")
+                    b.Property<long>("AuthorsAuthorId")
                         .HasColumnType("bigint");
 
-                    b.Property<long>("BooksId")
+                    b.Property<long>("BooksBookId")
                         .HasColumnType("bigint");
 
-                    b.HasKey("AuthorsId", "BooksId");
+                    b.HasKey("AuthorsAuthorId", "BooksBookId");
 
-                    b.HasIndex("BooksId");
+                    b.HasIndex("BooksBookId");
 
                     b.ToTable("AuthorBook");
                 });
 
             modelBuilder.Entity("BookGenre", b =>
                 {
-                    b.Property<long>("BooksId")
+                    b.Property<long>("BooksBookId")
                         .HasColumnType("bigint");
 
-                    b.Property<long>("GenresId")
+                    b.Property<long>("GenresGenreId")
                         .HasColumnType("bigint");
 
-                    b.HasKey("BooksId", "GenresId");
+                    b.HasKey("BooksBookId", "GenresGenreId");
 
-                    b.HasIndex("GenresId");
+                    b.HasIndex("GenresGenreId");
 
                     b.ToTable("BookGenre");
                 });
 
             modelBuilder.Entity("LibraryAPI.Domain.Models.Author", b =>
                 {
-                    b.Property<long>("Id")
+                    b.Property<long>("AuthorId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
                         .UseIdentityColumn();
@@ -66,14 +66,14 @@ namespace LibraryAPI.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
-                    b.HasKey("Id");
+                    b.HasKey("AuthorId");
 
                     b.ToTable("Authors");
                 });
 
             modelBuilder.Entity("LibraryAPI.Domain.Models.Book", b =>
                 {
-                    b.Property<long>("Id")
+                    b.Property<long>("BookId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
                         .UseIdentityColumn();
@@ -100,7 +100,7 @@ namespace LibraryAPI.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                    b.HasKey("BookId");
 
                     b.HasIndex("PublisherId");
 
@@ -109,7 +109,7 @@ namespace LibraryAPI.Migrations
 
             modelBuilder.Entity("LibraryAPI.Domain.Models.Genre", b =>
                 {
-                    b.Property<long>("Id")
+                    b.Property<long>("GenreId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
                         .UseIdentityColumn();
@@ -118,14 +118,14 @@ namespace LibraryAPI.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                    b.HasKey("GenreId");
 
                     b.ToTable("Genres");
                 });
 
             modelBuilder.Entity("LibraryAPI.Domain.Models.Publisher", b =>
                 {
-                    b.Property<long>("Id")
+                    b.Property<long>("PublisherId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
                         .UseIdentityColumn();
@@ -136,7 +136,7 @@ namespace LibraryAPI.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                    b.HasKey("PublisherId");
 
                     b.ToTable("Publishers");
                 });
@@ -145,13 +145,13 @@ namespace LibraryAPI.Migrations
                 {
                     b.HasOne("LibraryAPI.Domain.Models.Author", null)
                         .WithMany()
-                        .HasForeignKey("AuthorsId")
+                        .HasForeignKey("AuthorsAuthorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("LibraryAPI.Domain.Models.Book", null)
                         .WithMany()
-                        .HasForeignKey("BooksId")
+                        .HasForeignKey("BooksBookId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -160,13 +160,13 @@ namespace LibraryAPI.Migrations
                 {
                     b.HasOne("LibraryAPI.Domain.Models.Book", null)
                         .WithMany()
-                        .HasForeignKey("BooksId")
+                        .HasForeignKey("BooksBookId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("LibraryAPI.Domain.Models.Genre", null)
                         .WithMany()
-                        .HasForeignKey("GenresId")
+                        .HasForeignKey("GenresGenreId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

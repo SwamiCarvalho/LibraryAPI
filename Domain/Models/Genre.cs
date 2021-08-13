@@ -6,9 +6,9 @@ namespace LibraryAPI.Domain.Models
     public class Genre
     {
 
-        public long Id { get; set; }
+        public long GenreId { get; set; }
         [Required]
         public string Name { get; set; }
-        public IList<Book> Books { get; set; }
+        public IList<Book>? Books { get; set; }
     }
 }
