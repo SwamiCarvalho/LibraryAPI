@@ -1,5 +1,4 @@
-﻿using LibraryAPI.Resources;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
 
 namespace LibraryAPI.Resources

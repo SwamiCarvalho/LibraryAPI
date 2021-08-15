@@ -13,7 +13,7 @@ namespace LibraryAPI
     {
         public static void Main(string[] args)
         {
-            var host = BuildWebHost(args);
+            var host = CreateHostBuilder(args).Build();
 
             // If Data Model changes, delete database and update seed method, starting fresh with a new database
             CreateDbIfNotExists(host);
@@ -23,7 +23,7 @@ namespace LibraryAPI
 
         }
 
-        private static void CreateDbIfNotExists(IWebHost host)
+        private static void CreateDbIfNotExists(IHost host)
         {
             using var scope = host.Services.CreateScope();
             var services = scope.ServiceProvider;
@@ -40,14 +40,18 @@ namespace LibraryAPI
             }
         }
 
-        public static IWebHost BuildWebHost(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
+        public static IHostBuilder CreateHostBuilder(string[] args) =>
+            Host.CreateDefaultBuilder(args)
                 .ConfigureLogging(logging =>
                 {
                     logging.ClearProviders();
                     logging.AddConsole();
                 })
-                .UseStartup<Startup>()
-                .Build();
+                .ConfigureWebHostDefaults(webBuilder =>
+                {
+                    webBuilder.UseStartup<Startup>();
+                });
+
+
     }
 }

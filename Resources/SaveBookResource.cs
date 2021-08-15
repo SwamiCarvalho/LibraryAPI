@@ -14,6 +14,8 @@ namespace LibraryAPI.Resources
         [DisplayName("Publication Year")]
         public int PublicationYear { get; set; }
         public int? Edition { get; set; }
+        public string? Notes { get; set; }
+        public string? PhysicalDescription { get; set; }
         public List<GenreResource> Genres { get; set; }
         public List<AuthorResource> Authors { get; set; }
     }

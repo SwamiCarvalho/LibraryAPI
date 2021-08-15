@@ -9,6 +9,7 @@ namespace LibraryAPI.Resources
 {
     public class PublisherResource
     {
+        public long PublisherId { get; set; }
         [Required(ErrorMessage = "Please add the publisher name.")] 
         public string Name { get; set; }
         public string? Location { get; set; }

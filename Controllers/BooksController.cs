@@ -28,6 +28,7 @@ namespace LibraryAPI.Controllers
         }
 
         [HttpGet]
+        //[ResponseType(typeof(BookResource))]
         public async Task<IEnumerable<BookResource>> GetAsync()
         {
             var books = await _bookService.GetAllBooksAsync();
@@ -44,6 +45,8 @@ namespace LibraryAPI.Controllers
 
             var book = _mapper.Map<SaveBookResource, Book>(saveBookResource);
             var result = await _bookService.SaveBookAsync(book);
+
+            //db.Entry(book).Reference(x => x.Author).Load();
 
             if (!result.Success)
                 return BadRequest(result.Message);
