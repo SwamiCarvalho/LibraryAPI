@@ -29,12 +29,25 @@ namespace LibraryAPI.Controllers
 
         [HttpGet]
         //[ResponseType(typeof(BookResource))]
-        public async Task<IEnumerable<BookResource>> GetAsync()
+        public async Task<ActionResult<IEnumerable<BookResource>>> GetAllBooks()
         {
             var books = await _bookService.GetAllBooksAsync();
+
             var resources = _mapper.Map<IEnumerable<Book>, IEnumerable<BookResource>>(books);
 
-            return resources;
+            return Ok(resources);
+        }
+
+        // GET: api/Books/5
+        [HttpGet("{id}")]
+        public async Task<ActionResult<BookDetailsResource>> GetBookById(long id)
+        {
+            var result = await _bookService.GetBookByIdAsync(id);
+
+            var book = result.Book;
+            
+            var bookResource = _mapper.Map<Book, BookDetailsResource>(book);
+            return Ok(bookResource);
         }
 
         [HttpPost]
@@ -72,14 +85,14 @@ namespace LibraryAPI.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteAsync(int id)
+        public async Task<IActionResult> DeleteAsync(long id)
         {
             var result = await _bookService.DeleteBookAsync(id);
 
             if (!result.Success)
                 return BadRequest(result.Message);
 
-            var bookResource = _mapper.Map<Book, BookResource>(result.Book);
+            var bookResource = _mapper.Map<Book, BookDetailsResource>(result.Book);
             return Ok(bookResource);
         }
 

@@ -32,6 +32,21 @@ namespace LibraryAPI.Controllers
             return resources;
         }
 
+        // GET: api/genres/5
+        [HttpGet("{id}")]
+        public async Task<ActionResult<GenreResource>> GetGenre(long id)
+        {
+            var result = await _genreService.GetGenreByIdAsync(id);
+
+            if (!result.Success)
+            {
+                return BadRequest(result.Message);
+            }
+
+            var genreResource = _mapper.Map<Genre, GenreResource>(result.Genre);
+            return Ok(genreResource);
+        }
+
         [HttpPost]
         public async Task<IActionResult> PostAsync([Bind(include: "GenreId, Name")][FromBody] SaveGenreResource resource)
         {
@@ -64,8 +79,9 @@ namespace LibraryAPI.Controllers
             return Ok(categoryResource);
         }
 
+        // DELETE: api/genres/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteAsync(int id)
+        public async Task<IActionResult> DeleteAsync(long id)
         {
             var result = await _genreService.DeleteGenreAsync(id);
 

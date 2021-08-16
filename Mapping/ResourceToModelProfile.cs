@@ -1,9 +1,8 @@
 ﻿using AutoMapper;
 using LibraryAPI.Domain.Models;
 using LibraryAPI.Resources;
-using System.Linq;
 
-namespace LibraryAPI.Utils
+namespace LibraryAPI.Mapping
 {
     public class ResourceToModelProfile : Profile
     {

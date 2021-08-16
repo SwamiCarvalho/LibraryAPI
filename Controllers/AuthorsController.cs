@@ -77,18 +77,19 @@ namespace LibraryAPI.Controllers
         }
 
         // GET: api/Authors/5
-        /*[HttpGet("{id}")]
-        public async Task<ActionResult<Author>> GetAuthor(long id)
+        [HttpGet("{id}")]
+        public async Task<ActionResult<AuthorResource>> GetAuthor(long id)
         {
-            var author = await _authorService.GetAuthorByIdAsync(id);
+            var result = await _authorService.GetAuthorByIdAsync(id);
 
-            if (author == null)
+            if (!result.Success)
             {
-                return NotFound();
+                return BadRequest(result.Message);
             }
 
-            return author;
-        }*/
+            var authorResource = _mapper.Map<Author, AuthorResource>(result.Author);
+            return Ok(authorResource);
+        }
 
         /*// PUT: api/Authors/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754

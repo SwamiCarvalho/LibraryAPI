@@ -27,6 +27,16 @@ namespace LibraryAPI.Services
             return await _genreRepository.ListAsync();
         }
 
+        public async Task<GenreResponse> GetGenreByIdAsync(long id)
+        {
+            var genre = await _genreRepository.GetGenreByIdAsync(id);
+
+            if (genre == null)
+                return new GenreResponse("Genre not found.");
+
+            return new GenreResponse(genre);
+        }
+
         public async Task<GenreResponse> SaveGenreAsync(Genre genre)
         {
             try
@@ -64,7 +74,7 @@ namespace LibraryAPI.Services
             }
         }
 
-        public async Task<GenreResponse> DeleteGenreAsync(int id)
+        public async Task<GenreResponse> DeleteGenreAsync(long id)
         {
             var existingGenre = await _genreRepository.GetGenreByIdAsync(id);
 
@@ -83,16 +93,6 @@ namespace LibraryAPI.Services
                 // Do some logging stuff
                 return new GenreResponse($"An error occurred when deleting the genre: {ex.Message}");
             }
-        }
-
-        public async Task<GenreResponse> GetGenreByIdAsync(long id)
-        {
-            var genre = await _genreRepository.GetGenreByIdAsync(id);
-
-            if (genre == null)
-                return new GenreResponse("Genre not found.");
-
-            return new GenreResponse(genre);
         }
     }
 }
