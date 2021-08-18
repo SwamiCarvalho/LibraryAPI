@@ -1,9 +1,7 @@
 ﻿using LibraryAPI.Domain.Services;
 using LibraryAPI.Domain.Models;
 using LibraryAPI.Domain.Repositories;
-using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Supermarket.API.Domain.Repositories;
 using Supermarket.API.Domain.Services.Communication;
@@ -22,7 +20,7 @@ namespace LibraryAPI.Services
             _genreRepository = repositoryWrapper.Genres;
             _unitOfWork = unitOfWork;
         }
-        public async Task<IEnumerable<Genre>> ListAsync()
+        public async Task<IEnumerable<Genre>> GetAllGenresAsync()
         {
             return await _genreRepository.ListAsync();
         }

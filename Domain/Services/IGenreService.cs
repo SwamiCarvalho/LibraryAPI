@@ -7,7 +7,7 @@ namespace LibraryAPI.Domain.Services
 {
     public interface IGenreService
     {
-        Task<IEnumerable<Genre>> ListAsync();
+        Task<IEnumerable<Genre>> GetAllGenresAsync();
         Task<GenreResponse> GetGenreByIdAsync(long id);
         Task<GenreResponse> SaveGenreAsync(Genre genre);
         Task<GenreResponse> UpdateGenreAsync(long id, Genre genre);

@@ -2,16 +2,13 @@
 using LibraryAPI.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using LibraryAPI.Persistence.Repositories;
 using LibraryAPI.Persistence.Contexts;
 
-namespace LibraryAPI.Repository
+namespace LibraryAPI.Persistence.Repositories
 {
     public class GenreRepository : RepositoryBase<Genre>, IGenreRepository
     {
-
 
         public GenreRepository(AppDbContext context) : base(context) { }
 

@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 
 namespace LibraryAPI.Domain.Models
 {
@@ -7,8 +6,7 @@ namespace LibraryAPI.Domain.Models
     {
 
         public long GenreId { get; set; }
-        [Required]
         public string Name { get; set; }
-        public IList<Book>? Books { get; set; }
+        public IList<Book> Books { get; set; }
     }
 }

@@ -1,9 +1,7 @@
 ﻿using LibraryAPI.Domain.Services;
 using LibraryAPI.Domain.Repositories;
 using LibraryAPI.Domain.Models;
-using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Supermarket.API.Domain.Services.Communication;
 using Supermarket.API.Domain.Repositories;

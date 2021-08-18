@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using LibraryAPI.Domain.Models;
-using System.Text.RegularExpressions;
 using LibraryAPI.Domain.Services;
-using Microsoft.EntityFrameworkCore;
 using AutoMapper;
 using LibraryAPI.Resources;
 using Supermarket.API.Extensions;
@@ -44,14 +40,15 @@ namespace LibraryAPI.Controllers
         {
             var result = await _bookService.GetBookByIdAsync(id);
 
-            var book = result.Book;
-            
-            var bookResource = _mapper.Map<Book, BookDetailsResource>(book);
+            if (!result.Success)
+                return BadRequest(result.Message);
+
+            var bookResource = _mapper.Map<Book, BookDetailsResource>(result.Book);
             return Ok(bookResource);
         }
 
         [HttpPost]
-        public async Task<IActionResult> PostAsync([FromBody] SaveBookResource saveBookResource)
+        public async Task<IActionResult> PostAsync(SaveBookResource saveBookResource)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState.GetErrorMessages());
@@ -69,18 +66,18 @@ namespace LibraryAPI.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutAsync(long id, [FromBody] SaveBookResource resource)
+        public async Task<IActionResult> PutAsync(long id, BookDetailsResource resource)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState.GetErrorMessages());
 
-            var book = _mapper.Map<SaveBookResource, Book>(resource);
+            var book = _mapper.Map<BookDetailsResource, Book>(resource);
             var result = await _bookService.UpdateBookAsync(id, book);
 
             if (!result.Success)
                 return BadRequest(result.Message);
 
-            var bookResource = _mapper.Map<Book, BookResource>(result.Book);
+            var bookResource = _mapper.Map<Book, BookDetailsResource>(result.Book);
             return Ok(bookResource);
         }
 

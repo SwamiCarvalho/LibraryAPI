@@ -11,8 +11,12 @@ namespace LibraryAPI.Mapping
             CreateMap<SaveBookResource, Book>();
             CreateMap<SaveAuthorResource, Author>();
             CreateMap<SaveGenreResource, Genre>();
+
             CreateMap<AuthorResource, Author>();
             CreateMap<GenreResource, Genre>();
+            CreateMap<BookResource, Book>();
+
+            CreateMap<BookDetailsResource, Book>();
 
         }
     }

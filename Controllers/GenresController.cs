@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using LibraryAPI.Domain.Models;
@@ -15,7 +14,7 @@ namespace LibraryAPI.Controllers
     public class GenresController : Controller
     {
         private readonly IGenreService _genreService;
-        private IMapper _mapper;
+        private readonly IMapper _mapper;
         //private readonly ILogger<BooksController> _logger;
 
         public GenresController(IGenreService genreService, IMapper mapper)
@@ -25,11 +24,11 @@ namespace LibraryAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<IEnumerable<GenreResource>> GetAllAsync()
+        public async Task<ActionResult<IEnumerable<GenreResource>>> GetAllGenres()
         {
-            var genres = await _genreService.ListAsync();
+            var genres = await _genreService.GetAllGenresAsync();
             var resources = _mapper.Map<IEnumerable<Genre>, IEnumerable<GenreResource>>(genres);
-            return resources;
+            return Ok(resources);
         }
 
         // GET: api/genres/5
@@ -39,16 +38,14 @@ namespace LibraryAPI.Controllers
             var result = await _genreService.GetGenreByIdAsync(id);
 
             if (!result.Success)
-            {
                 return BadRequest(result.Message);
-            }
 
             var genreResource = _mapper.Map<Genre, GenreResource>(result.Genre);
             return Ok(genreResource);
         }
 
         [HttpPost]
-        public async Task<IActionResult> PostAsync([Bind(include: "GenreId, Name")][FromBody] SaveGenreResource resource)
+        public async Task<IActionResult> PostAsync(SaveGenreResource resource)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState.GetErrorMessages());
@@ -59,24 +56,24 @@ namespace LibraryAPI.Controllers
             if (!result.Success)
                 return BadRequest(result.Message);
 
-            var genreResource = _mapper.Map<Genre, GenreResource>(result.Genre);
+            var genreResource = _mapper.Map<Genre, GenreResource>(genre);
             return Ok(genreResource);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutAsync(long id, [FromBody] SaveGenreResource resource)
+        public async Task<IActionResult> PutAsync(long id, GenreResource resource)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState.GetErrorMessages());
 
-            var category = _mapper.Map<SaveGenreResource, Genre>(resource);
-            var result = await _genreService.UpdateGenreAsync(id, category);
+            var genre = _mapper.Map<GenreResource, Genre>(resource);
+            var result = await _genreService.UpdateGenreAsync(id, genre);
 
             if (!result.Success)
                 return BadRequest(result.Message);
 
-            var categoryResource = _mapper.Map<Genre, GenreResource>(result.Genre);
-            return Ok(categoryResource);
+            var genreResource = _mapper.Map<Genre, GenreResource>(result.Genre);
+            return Ok(genreResource);
         }
 
         // DELETE: api/genres/5

@@ -1,10 +1,8 @@
 ﻿using LibraryAPI.Domain.Repositories;
 using LibraryAPI.Persistence.Contexts;
-using LibraryAPI.Persistence.Repositories;
 using LibraryAPI.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace LibraryAPI.Persistence.Repositories
