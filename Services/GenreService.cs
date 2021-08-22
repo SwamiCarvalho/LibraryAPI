@@ -1,9 +1,7 @@
 ﻿using LibraryAPI.Domain.Services;
 using LibraryAPI.Domain.Models;
 using LibraryAPI.Domain.Repositories;
-using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Supermarket.API.Domain.Repositories;
 using Supermarket.API.Domain.Services.Communication;
@@ -22,9 +20,19 @@ namespace LibraryAPI.Services
             _genreRepository = repositoryWrapper.Genres;
             _unitOfWork = unitOfWork;
         }
-        public async Task<IEnumerable<Genre>> ListAsync()
+        public async Task<IEnumerable<Genre>> GetAllGenresAsync()
         {
             return await _genreRepository.ListAsync();
+        }
+
+        public async Task<GenreResponse> GetGenreByIdAsync(long id)
+        {
+            var genre = await _genreRepository.GetGenreByIdAsync(id);
+
+            if (genre == null)
+                return new GenreResponse("Genre not found.");
+
+            return new GenreResponse(genre);
         }
 
         public async Task<GenreResponse> SaveGenreAsync(Genre genre)
@@ -64,7 +72,7 @@ namespace LibraryAPI.Services
             }
         }
 
-        public async Task<GenreResponse> DeleteGenreAsync(int id)
+        public async Task<GenreResponse> DeleteGenreAsync(long id)
         {
             var existingGenre = await _genreRepository.GetGenreByIdAsync(id);
 
@@ -85,14 +93,17 @@ namespace LibraryAPI.Services
             }
         }
 
-        public async Task<GenreResponse> GetGenreByIdAsync(long id)
+        /*public async Task<BookResponse> GetGenreBooks(long id)
         {
             var genre = await _genreRepository.GetGenreByIdAsync(id);
 
             if (genre == null)
-                return new GenreResponse("Genre not found.");
+                return new BookResponse("Genre not found.");
 
-            return new GenreResponse(genre);
+            var genreBooks = genre.Books;
+
+            return new BookResponse(genreBooks);
         }
+    }*/
     }
 }

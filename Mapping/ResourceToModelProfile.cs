@@ -1,9 +1,8 @@
 ﻿using AutoMapper;
 using LibraryAPI.Domain.Models;
 using LibraryAPI.Resources;
-using System.Linq;
 
-namespace LibraryAPI.Utils
+namespace LibraryAPI.Mapping
 {
     public class ResourceToModelProfile : Profile
     {
@@ -12,8 +11,12 @@ namespace LibraryAPI.Utils
             CreateMap<SaveBookResource, Book>();
             CreateMap<SaveAuthorResource, Author>();
             CreateMap<SaveGenreResource, Genre>();
+
             CreateMap<AuthorResource, Author>();
             CreateMap<GenreResource, Genre>();
+            CreateMap<BookResource, Book>();
+
+            CreateMap<BookDetailsResource, Book>();
 
         }
     }

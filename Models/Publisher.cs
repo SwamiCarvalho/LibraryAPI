@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using LibraryAPI.Domain.Models;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace LibraryAPI.Models

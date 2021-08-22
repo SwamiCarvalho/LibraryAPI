@@ -1,9 +1,7 @@
 ﻿using LibraryAPI.Domain.Services;
 using LibraryAPI.Domain.Repositories;
 using LibraryAPI.Domain.Models;
-using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Supermarket.API.Domain.Services.Communication;
 using Supermarket.API.Domain.Repositories;
@@ -26,6 +24,17 @@ namespace LibraryAPI.Services
         public async Task<IEnumerable<Book>> GetAllBooksAsync()
         {
             return await _bookRepository.ListAsync();
+        }
+
+        public async Task<BookResponse> GetBookByIdAsync(long id)
+        {
+            var book = await _bookRepository.GetBookByIdAsync(id);
+
+            if (book == null)
+                return new BookResponse("Book not found.");
+
+            return new BookResponse(book);
+            
         }
 
         public async Task<BookResponse> SaveBookAsync(Book book)
@@ -72,7 +81,7 @@ namespace LibraryAPI.Services
             }
         }
 
-        public async Task<BookResponse> DeleteBookAsync(int id)
+        public async Task<BookResponse> DeleteBookAsync(long id)
         {
             var existingBook = await _bookRepository.GetBookByIdAsync(id);
 
@@ -91,16 +100,6 @@ namespace LibraryAPI.Services
                 // Do some logging stuff
                 return new BookResponse($"An error occurred when deleting the book: {ex.Message}");
             }
-        }
-
-        public async Task<BookResponse> GetBookByIdAsync(long id)
-        {
-            var book = await _bookRepository.GetBookByIdAsync(id);
-
-            if (book == null)
-                return new BookResponse("Book not found.");
-
-            return new BookResponse(book);
         }
 
         /*public IEnumerable<Book> GetAllBooks()

@@ -1,6 +1,5 @@
-using System;
 
-namespace LibraryWebApp.Models
+namespace LibraryAPI.Domain.Models
 {
     public class ErrorViewModel
     {

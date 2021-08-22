@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using LibraryAPI.Domain.Models;
-using System.Text.RegularExpressions;
 using LibraryAPI.Domain.Services;
-using Microsoft.EntityFrameworkCore;
 using AutoMapper;
 using LibraryAPI.Resources;
 using Supermarket.API.Extensions;
@@ -28,22 +24,39 @@ namespace LibraryAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<IEnumerable<BookResource>> GetAsync()
+        //[ResponseType(typeof(BookResource))]
+        public async Task<ActionResult<IEnumerable<BookResource>>> GetAllBooks()
         {
             var books = await _bookService.GetAllBooksAsync();
+
             var resources = _mapper.Map<IEnumerable<Book>, IEnumerable<BookResource>>(books);
 
-            return resources;
+            return Ok(resources);
+        }
+
+        // GET: api/Books/5
+        [HttpGet("{id}")]
+        public async Task<ActionResult<BookDetailsResource>> GetBookById(long id)
+        {
+            var result = await _bookService.GetBookByIdAsync(id);
+
+            if (!result.Success)
+                return BadRequest(result.Message);
+
+            var bookResource = _mapper.Map<Book, BookDetailsResource>(result.Book);
+            return Ok(bookResource);
         }
 
         [HttpPost]
-        public async Task<IActionResult> PostAsync([FromBody] SaveBookResource saveBookResource)
+        public async Task<IActionResult> PostAsync([FromBody]SaveBookResource saveBookResource)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState.GetErrorMessages());
 
             var book = _mapper.Map<SaveBookResource, Book>(saveBookResource);
             var result = await _bookService.SaveBookAsync(book);
+
+            //db.Entry(book).Reference(x => x.Author).Load();
 
             if (!result.Success)
                 return BadRequest(result.Message);
@@ -53,30 +66,30 @@ namespace LibraryAPI.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutAsync(long id, [FromBody] SaveBookResource resource)
+        public async Task<IActionResult> PutAsync(long id, BookDetailsResource resource)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState.GetErrorMessages());
 
-            var book = _mapper.Map<SaveBookResource, Book>(resource);
+            var book = _mapper.Map<BookDetailsResource, Book>(resource);
             var result = await _bookService.UpdateBookAsync(id, book);
 
             if (!result.Success)
                 return BadRequest(result.Message);
 
-            var bookResource = _mapper.Map<Book, BookResource>(result.Book);
+            var bookResource = _mapper.Map<Book, BookDetailsResource>(result.Book);
             return Ok(bookResource);
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteAsync(int id)
+        public async Task<IActionResult> DeleteAsync([FromRoute]long id)
         {
             var result = await _bookService.DeleteBookAsync(id);
 
             if (!result.Success)
                 return BadRequest(result.Message);
 
-            var bookResource = _mapper.Map<Book, BookResource>(result.Book);
+            var bookResource = _mapper.Map<Book, BookDetailsResource>(result.Book);
             return Ok(bookResource);
         }
 

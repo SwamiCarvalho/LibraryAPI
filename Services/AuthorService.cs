@@ -29,6 +29,16 @@ namespace LibraryAPI.Services
             return await _authorRepository.ListAsync();
         }
 
+        public async Task<AuthorResponse> GetAuthorByIdAsync(long id)
+        {
+            var author = await _authorRepository.GetAuthorByIdAsync(id);
+
+            if (author == null)
+                return new AuthorResponse("Author not found.");
+
+            return new AuthorResponse(author);
+        }
+
         public async Task<AuthorResponse> SaveAuthorAsync(Author author)
         {
             try
@@ -68,7 +78,7 @@ namespace LibraryAPI.Services
             }
         }
 
-        public async Task<AuthorResponse> DeleteAuthorAsync(int id)
+        public async Task<AuthorResponse> DeleteAuthorAsync(long id)
         {
             var existingAuthor = await _authorRepository.GetAuthorByIdAsync(id);
 
@@ -87,16 +97,6 @@ namespace LibraryAPI.Services
                 // Do some logging stuff
                 return new AuthorResponse($"An error occurred when deleting the author: {ex.Message}");
             }
-        }
-
-        public async Task<AuthorResponse> GetAuthorByIdAsync(long id)
-        {
-            var author = await _authorRepository.GetAuthorByIdAsync(id);
-
-            if (author == null)
-                return new AuthorResponse("Author not found.");
-
-            return new AuthorResponse(author);
         }
 
         /*public async Task<IEnumerable<Author>> GetAllAuthorsAsync()
