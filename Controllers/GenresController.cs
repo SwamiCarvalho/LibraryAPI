@@ -78,7 +78,7 @@ namespace LibraryAPI.Controllers
 
         // DELETE: api/genres/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteAsync(long id)
+        public async Task<IActionResult> DeleteAsync([FromRoute]long id)
         {
             var result = await _genreService.DeleteGenreAsync(id);
 
@@ -88,6 +88,19 @@ namespace LibraryAPI.Controllers
             var genreResource = _mapper.Map<Genre, GenreResource>(result.Genre);
             return Ok(genreResource);
         }
+
+        // GET: api/genres/5
+        /*[HttpGet("{genreName}")]
+        public async Task<ActionResult<GenreResource>> GetGenreAllBooks(long id)
+        {
+            var result = await _genreService.GetGenreBooks(id);
+
+            if (!result.Success)
+                return BadRequest(result.Message);
+
+            var booksResource = _mapper.Map<IList<Book>, IList<BookResource>>(result.Books);
+            return Ok(booksResource);
+        }*/
 
         /*// GET: api/Genres
         [HttpGet]

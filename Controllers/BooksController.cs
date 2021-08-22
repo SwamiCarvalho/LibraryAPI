@@ -48,7 +48,7 @@ namespace LibraryAPI.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> PostAsync(SaveBookResource saveBookResource)
+        public async Task<IActionResult> PostAsync([FromBody]SaveBookResource saveBookResource)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState.GetErrorMessages());
@@ -82,7 +82,7 @@ namespace LibraryAPI.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteAsync(long id)
+        public async Task<IActionResult> DeleteAsync([FromRoute]long id)
         {
             var result = await _bookService.DeleteBookAsync(id);
 

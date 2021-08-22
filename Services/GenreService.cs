@@ -92,5 +92,18 @@ namespace LibraryAPI.Services
                 return new GenreResponse($"An error occurred when deleting the genre: {ex.Message}");
             }
         }
+
+        /*public async Task<BookResponse> GetGenreBooks(long id)
+        {
+            var genre = await _genreRepository.GetGenreByIdAsync(id);
+
+            if (genre == null)
+                return new BookResponse("Genre not found.");
+
+            var genreBooks = genre.Books;
+
+            return new BookResponse(genreBooks);
+        }
+    }*/
     }
 }

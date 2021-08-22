@@ -12,5 +12,6 @@ namespace LibraryAPI.Domain.Services
         Task<GenreResponse> SaveGenreAsync(Genre genre);
         Task<GenreResponse> UpdateGenreAsync(long id, Genre genre);
         Task<GenreResponse> DeleteGenreAsync(long id);
+        //Task<BookResponse> GetGenreBooks(long id);
     }
 }
