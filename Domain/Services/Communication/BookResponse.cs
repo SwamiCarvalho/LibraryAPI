@@ -1,14 +1,14 @@
 ﻿using LibraryAPI.Domain.Models;
 using System.Collections.Generic;
 
-namespace Supermarket.API.Domain.Services.Communication
+namespace LibraryAPI.Domain.Services.Communication
 {
     public class BookResponse : BaseResponse
     {
         public Book Book { get; private set; }
-        public IList<Book> Books { get; private set; }
+        public IEnumerable<Book> Books { get; private set; }
 
-        private BookResponse(bool success, string message, Book book, IList<Book> books) : base(success, message)
+        private BookResponse(bool success, string message, Book book, IEnumerable<Book> books) : base(success, message)
         {
             Book = book;
             Books = books;
@@ -30,7 +30,7 @@ namespace Supermarket.API.Domain.Services.Communication
         public BookResponse(string message) : this(false, message, null, null)
         { }
 
-        public BookResponse(IList<Book> books) : this(true, string.Empty, null, books)
+        public BookResponse(IEnumerable<Book> books) : this(true, string.Empty, null, books)
         { }
     }
 }

@@ -1,8 +1,8 @@
 ﻿using System.Threading.Tasks;
+using LibraryAPI.Domain.Repositories;
 using LibraryAPI.Persistence.Contexts;
-using Supermarket.API.Domain.Repositories;
 
-namespace Supermarket.API.Persistence.Repositories
+namespace LibraryAPI.Persistence.Repositories
 {
     public class UnitOfWork : IUnitOfWork
     {

@@ -3,9 +3,8 @@ using LibraryAPI.Domain.Repositories;
 using LibraryAPI.Domain.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Supermarket.API.Domain.Services.Communication;
-using Supermarket.API.Domain.Repositories;
 using System;
+using LibraryAPI.Domain.Services.Communication;
 
 namespace LibraryAPI.Services
 {
@@ -21,9 +20,14 @@ namespace LibraryAPI.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<IEnumerable<Book>> GetAllBooksAsync()
+        public async Task<BookResponse> GetAllBooksAsync()
         {
-            return await _bookRepository.ListAsync();
+            var books = await _bookRepository.ListAsync();
+
+            if (books == null)
+                return new BookResponse("Books not found.");
+
+            return new BookResponse(books);
         }
 
         public async Task<BookResponse> GetBookByIdAsync(long id)

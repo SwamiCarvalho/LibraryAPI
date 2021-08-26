@@ -1,5 +1,5 @@
 ﻿using LibraryAPI.Domain.Models;
-using Supermarket.API.Domain.Services.Communication;
+using LibraryAPI.Domain.Services.Communication;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -7,7 +7,7 @@ namespace LibraryAPI.Domain.Services
 {
     public interface IBookService
     {
-        Task<IEnumerable<Book>> GetAllBooksAsync();
+        Task<BookResponse> GetAllBooksAsync();
         Task<BookResponse> GetBookByIdAsync(long id);
         Task<BookResponse> SaveBookAsync(Book book);
         Task<BookResponse> UpdateBookAsync(long id, Book book);

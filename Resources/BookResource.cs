@@ -12,7 +12,7 @@ namespace LibraryAPI.Resources
         [DisplayName("Publication Year")]
         public int PublicationYear { get; set; }
         public int? Edition { get; set; }
-        public IList<GenreResource> Genres { get; set; }
-        public IList<AuthorResource> Authors { get; set; }
+        public virtual ICollection<GenreResource> Genres { get; set; }
+        public virtual ICollection<AuthorResource> Authors { get; set; }
     }
 }

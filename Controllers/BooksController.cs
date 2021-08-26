@@ -27,11 +27,14 @@ namespace LibraryAPI.Controllers
         //[ResponseType(typeof(BookResource))]
         public async Task<ActionResult<IEnumerable<BookResource>>> GetAllBooks()
         {
-            var books = await _bookService.GetAllBooksAsync();
+            var result = await _bookService.GetAllBooksAsync();
 
-            var resources = _mapper.Map<IEnumerable<Book>, IEnumerable<BookResource>>(books);
+            if (!result.Success)
+                return BadRequest(result.Message);
 
-            return Ok(resources);
+            var books = _mapper.Map<IEnumerable<Book>, IEnumerable<BookResource>>(result.Books);
+
+            return Ok(books);
         }
 
         // GET: api/Books/5

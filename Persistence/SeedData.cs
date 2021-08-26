@@ -3,7 +3,7 @@ using LibraryAPI.Persistence.Contexts;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace LibraryAPI.Data
+namespace LibraryAPI.Persistence
 {
     public static class SeedData
     {
@@ -124,7 +124,7 @@ namespace LibraryAPI.Data
                 Authors = new List<Author>()
             };
 
-            piadas_999_secas.Genres.Add(new Genre { Name = "Anedotas"});
+            piadas_999_secas.Genres.Add(new Genre {Name = "Anedotas"});
             piadas_999_secas.Authors.Add(new Author {FirstName = "Pedro", LastName="Pinto" });
             piadas_999_secas.Authors.Add(new Author {FirstName = "Gonçalo", LastName="Castro" });
             piadas_999_secas.Authors.Add(new Author {FirstName = "João", LastName="Ramalhinho" });

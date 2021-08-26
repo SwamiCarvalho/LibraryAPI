@@ -1,6 +1,6 @@
 ﻿using LibraryAPI.Domain.Models;
 
-namespace Supermarket.API.Domain.Services.Communication
+namespace LibraryAPI.Domain.Services.Communication
 {
     public class AuthorResponse : BaseResponse
     {
