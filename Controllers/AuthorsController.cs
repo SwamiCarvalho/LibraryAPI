@@ -1,13 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using LibraryAPI.Domain.Models;
 using LibraryAPI.Domain.Services;
 using AutoMapper;
 using LibraryAPI.Resources;
 using Supermarket.API.Extensions;
+using Microsoft.AspNetCore.Mvc;
 
 namespace LibraryAPI.Controllers
 {
@@ -64,12 +64,12 @@ namespace LibraryAPI.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutAsync(long id, [FromBody] SaveAuthorResource resource)
+        public async Task<IActionResult> PutAsync(long id, [FromBody] AuthorResource resource)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState.GetErrorMessages());
 
-            var author = _mapper.Map<SaveAuthorResource, Author>(resource);
+            var author = _mapper.Map<AuthorResource, Author>(resource);
             var result = await _authorService.UpdateAuthorAsync(id, author);
 
             if (!result.Success)
