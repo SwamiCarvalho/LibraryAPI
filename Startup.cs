@@ -1,6 +1,7 @@
 using LibraryAPI.Domain.Repositories;
 using LibraryAPI.Domain.Services;
 using LibraryAPI.Persistence.Contexts;
+using LibraryAPI.Persistence.Repositories;
 using LibraryAPI.Repository;
 using LibraryAPI.Services;
 using Microsoft.AspNetCore.Builder;
@@ -10,8 +11,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
-using Supermarket.API.Domain.Repositories;
-using Supermarket.API.Persistence.Repositories;
 using System;
 
 namespace LibraryAPI

@@ -14,7 +14,7 @@ namespace LibraryAPI.Resources
         public int? Edition { get; set; }
         public string? Notes { get; set; }
         public string? PhysicalDescription { get; set; }
-        public IList<GenreResource> Genres { get; set; }
-        public IList<AuthorResource> Authors { get; set; }
+        public ICollection<GenreResource> Genres { get; set; }
+        public ICollection<AuthorResource> Authors { get; set; }
     }
 }

@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
-
+using System.ComponentModel.DataAnnotations;
 
 namespace LibraryAPI.Domain.Models
 {
     public class Book
     {
+        [Key]
         public long BookId { get; set; }
         public string Title { get; set; }
         public string? OgTitle { get; set; }
@@ -15,7 +16,7 @@ namespace LibraryAPI.Domain.Models
 
         // Navigation Property
         public Publisher Publisher { get; set; }
-        public IList<Author> Authors { get; set; }
-        public IList<Genre> Genres { get; set; }
+        public virtual ICollection<Author> Authors { get; set; }
+        public virtual ICollection<Genre> Genres { get; set; }
     }
 }

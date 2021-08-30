@@ -1,5 +1,5 @@
 ﻿using LibraryAPI.Domain.Models;
-using Supermarket.API.Domain.Services.Communication;
+using LibraryAPI.Domain.Services.Communication;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 

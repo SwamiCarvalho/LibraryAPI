@@ -3,9 +3,8 @@ using LibraryAPI.Domain.Models;
 using LibraryAPI.Domain.Repositories;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Supermarket.API.Domain.Repositories;
-using Supermarket.API.Domain.Services.Communication;
 using System;
+using LibraryAPI.Domain.Services.Communication;
 
 namespace LibraryAPI.Services
 {

@@ -3,9 +3,10 @@ using LibraryAPI.Domain.Repositories;
 using LibraryAPI.Domain.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Supermarket.API.Domain.Services.Communication;
-using Supermarket.API.Domain.Repositories;
 using System;
+using LibraryAPI.Domain.Services.Communication;
+using AutoMapper;
+using LibraryAPI.Resources;
 
 namespace LibraryAPI.Services
 {
@@ -14,36 +15,57 @@ namespace LibraryAPI.Services
 
         public readonly IBookRepository _bookRepository;
         public readonly IUnitOfWork _unitOfWork;
+        private readonly IMapper _mapper;
 
-        public BookService(IRepositoryWrapper repositoryWrapper, IUnitOfWork unitOfWork)
+        public BookService(IRepositoryWrapper repositoryWrapper, IUnitOfWork unitOfWork, IMapper mapper)
         {
             _bookRepository = repositoryWrapper.Books;
             _unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
 
-        public async Task<IEnumerable<Book>> GetAllBooksAsync()
+        public async Task<BookResponse> GetAllBooksAsync()
         {
-            return await _bookRepository.ListAsync();
+            var books = await _bookRepository.ListAsync();
+
+            if (books == null)
+                return new BookResponse("Books not found.");
+
+            var booksResource = _mapper.Map<IEnumerable<Book>, IEnumerable<BookResource>>(books);
+
+            return new BookResponse(booksResource);
         }
 
-        public async Task<BookResponse> GetBookByIdAsync(long id)
+        public async Task<BookResponse> GetBookByIdAsync(long id, bool full)
         {
             var book = await _bookRepository.GetBookByIdAsync(id);
-
             if (book == null)
                 return new BookResponse("Book not found.");
 
-            return new BookResponse(book);
-            
+            /*if (full is true)
+            {
+                var bookResource = _mapper.Map<Book, BookDetailsResource>(book);
+            }
+            else
+            {*/
+                
+            var bookResource = _mapper.Map<Book, BookDetailsResource>(book);
+            //}
+
+            return new BookResponse(bookResource);  
         }
 
-        public async Task<BookResponse> SaveBookAsync(Book book)
+        public async Task<BookResponse> SaveBookAsync(SaveBookResource newBook)
         {
             try
             {
+                var book = _mapper.Map<SaveBookResource, Book>(newBook);
                 _bookRepository.AddBook(book);
                 await _unitOfWork.CompleteAsync();
-                return new BookResponse(book);
+
+                var bookResource = _mapper.Map<Book, BookResource>(book);
+
+                return new BookResponse(bookResource);
             }
             catch (Exception ex)
             {
@@ -51,8 +73,10 @@ namespace LibraryAPI.Services
             }
         }
 
-        public async Task<BookResponse> UpdateBookAsync(long id, Book book)
+        public async Task<BookResponse> UpdateBookAsync(long id, BookDetailsResource bookDetails)
         {
+            var book = _mapper.Map<BookDetailsResource, Book>(bookDetails);
+
             var existingBook = await _bookRepository.GetBookByIdAsync(id);
 
             if (existingBook == null)
@@ -73,7 +97,9 @@ namespace LibraryAPI.Services
                 _bookRepository.UpdateBook(existingBook);
                 await _unitOfWork.CompleteAsync();
 
-                return new BookResponse(existingBook);
+                var bookResource = _mapper.Map<Book, BookResource>(existingBook);
+
+                return new BookResponse(bookResource);
             }
             catch (Exception ex)
             {
@@ -93,7 +119,9 @@ namespace LibraryAPI.Services
                 _bookRepository.DeleteBook(existingBook);
                 await _unitOfWork.CompleteAsync();
 
-                return new BookResponse(existingBook);
+                var bookResource = _mapper.Map<Book, BookResource>(existingBook);
+
+                return new BookResponse(bookResource);
             }
             catch (Exception ex)
             {

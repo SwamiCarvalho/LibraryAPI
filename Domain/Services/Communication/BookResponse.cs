@@ -1,16 +1,18 @@
-﻿using LibraryAPI.Domain.Models;
+﻿using LibraryAPI.Resources;
 using System.Collections.Generic;
 
-namespace Supermarket.API.Domain.Services.Communication
+namespace LibraryAPI.Domain.Services.Communication
 {
     public class BookResponse : BaseResponse
     {
-        public Book Book { get; private set; }
-        public IList<Book> Books { get; private set; }
+        public BookResource Book { get; private set; }
+        public BookDetailsResource BookDetails { get; private set; }
+        public IEnumerable<BookResource> Books { get; private set; }
 
-        private BookResponse(bool success, string message, Book book, IList<Book> books) : base(success, message)
+        private BookResponse(bool success, string message, BookResource book, BookDetailsResource bookDetails, IEnumerable<BookResource> books) : base(success, message)
         {
             Book = book;
+            BookDetails = bookDetails;
             Books = books;
         }
 
@@ -19,7 +21,10 @@ namespace Supermarket.API.Domain.Services.Communication
         /// </summary>
         /// <param name="book">Saved category.</param>
         /// <returns>Response.</returns>
-        public BookResponse(Book book) : this(true, string.Empty, book, null)
+        public BookResponse(BookResource book) : this(true, string.Empty, book, null, null)
+        { }
+
+        public BookResponse(BookDetailsResource bookDetails) : this(true, string.Empty, null, bookDetails, null)
         { }
 
         /// <summary>
@@ -27,10 +32,10 @@ namespace Supermarket.API.Domain.Services.Communication
         /// </summary>
         /// <param name="message">Error message.</param>
         /// <returns>Response.</returns>
-        public BookResponse(string message) : this(false, message, null, null)
+        public BookResponse(string message) : this(false, message, null, null, null)
         { }
 
-        public BookResponse(IList<Book> books) : this(true, string.Empty, null, books)
+        public BookResponse(IEnumerable<BookResource> books) : this(true, string.Empty, null, null, books)
         { }
     }
 }

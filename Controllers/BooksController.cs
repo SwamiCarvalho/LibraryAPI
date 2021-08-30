@@ -1,9 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using LibraryAPI.Domain.Models;
 using LibraryAPI.Domain.Services;
-using AutoMapper;
 using LibraryAPI.Resources;
 using Supermarket.API.Extensions;
 
@@ -14,71 +12,65 @@ namespace LibraryAPI.Controllers
     public class BooksController : Controller
     {
         private readonly IBookService _bookService;
-        private readonly IMapper _mapper;
         //private readonly ILogger<BooksController> _logger;
 
-        public BooksController(IBookService bookService, IMapper mapper)
+        public BooksController(IBookService bookService)
         {
             _bookService = bookService;
-            _mapper = mapper;
         }
 
         [HttpGet]
         //[ResponseType(typeof(BookResource))]
         public async Task<ActionResult<IEnumerable<BookResource>>> GetAllBooks()
         {
-            var books = await _bookService.GetAllBooksAsync();
+            var result = await _bookService.GetAllBooksAsync();
 
-            var resources = _mapper.Map<IEnumerable<Book>, IEnumerable<BookResource>>(books);
+            if (!result.Success)
+                return BadRequest(result.Message);
 
-            return Ok(resources);
+            return Ok(result.Books);
         }
 
         // GET: api/Books/5
         [HttpGet("{id}")]
         public async Task<ActionResult<BookDetailsResource>> GetBookById(long id)
         {
-            var result = await _bookService.GetBookByIdAsync(id);
+            var result = await _bookService.GetBookByIdAsync(id, true);
 
             if (!result.Success)
                 return BadRequest(result.Message);
 
-            var bookResource = _mapper.Map<Book, BookDetailsResource>(result.Book);
-            return Ok(bookResource);
+            return Ok(result.BookDetails);
         }
 
         [HttpPost]
-        public async Task<IActionResult> PostAsync([FromBody]SaveBookResource saveBookResource)
+        public async Task<IActionResult> PostAsync([FromBody]SaveBookResource newBook)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState.GetErrorMessages());
-
-            var book = _mapper.Map<SaveBookResource, Book>(saveBookResource);
-            var result = await _bookService.SaveBookAsync(book);
+            
+            var result = await _bookService.SaveBookAsync(newBook);
 
             //db.Entry(book).Reference(x => x.Author).Load();
 
             if (!result.Success)
                 return BadRequest(result.Message);
 
-            var bookResource = _mapper.Map<Book, BookResource>(book);
-            return Ok(bookResource);
+            return Ok(result.Book);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutAsync(long id, BookDetailsResource resource)
+        public async Task<IActionResult> PutAsync(long id, [FromBody]BookDetailsResource bookDetails)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState.GetErrorMessages());
 
-            var book = _mapper.Map<BookDetailsResource, Book>(resource);
-            var result = await _bookService.UpdateBookAsync(id, book);
+            var result = await _bookService.UpdateBookAsync(id, bookDetails);
 
             if (!result.Success)
                 return BadRequest(result.Message);
 
-            var bookResource = _mapper.Map<Book, BookDetailsResource>(result.Book);
-            return Ok(bookResource);
+            return Ok(result.Book);
         }
 
         [HttpDelete("{id}")]
@@ -89,8 +81,7 @@ namespace LibraryAPI.Controllers
             if (!result.Success)
                 return BadRequest(result.Message);
 
-            var bookResource = _mapper.Map<Book, BookDetailsResource>(result.Book);
-            return Ok(bookResource);
+            return Ok(result.Book);
         }
 
         /*// GET: api/Books
