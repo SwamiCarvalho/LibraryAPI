@@ -7,6 +7,7 @@ using System;
 using LibraryAPI.Domain.Services.Communication;
 using AutoMapper;
 using LibraryAPI.Resources;
+using System.Linq;
 
 namespace LibraryAPI.Services
 {
@@ -129,38 +130,5 @@ namespace LibraryAPI.Services
                 return new BookResponse($"An error occurred when deleting the book: {ex.Message}");
             }
         }
-
-        /*public IEnumerable<Book> GetAllBooks()
-        {
-            return FindAll()
-                .OrderBy(b => b.Title);
-        }
-
-        public IEnumerable<Book> GetAllBooksWithDetails()
-        {
-            return FindAll()
-                .Include(b => b.BooksBooks)
-                    .ThenInclude(bg => bg.Book)
-                .Include(b => b.BooksBooks)
-                    .ThenInclude(ba => ba.Book)
-                .OrderBy(b => b.Title).ToList();
-        }
-
-        public async Task<Book> GetBookDetailsAsync(long? id)
-        {
-            return await FindByCondition(b => b.Id == id).AsQueryable()
-                .Include(b => b.BooksBooks)
-                    .ThenInclude(bg => bg.Book)
-                .Include(b => b.BooksBooks)
-                    .ThenInclude(ba => ba.Book)
-                .OrderBy(b => b.Title).FirstOrDefaultAsync();
-
-        }
-
-        public bool BookExists(long id)
-        {
-            return FindAll().Any(b => b.Id == id);
-        }*/
-
     }
 }

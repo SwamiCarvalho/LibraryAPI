@@ -20,7 +20,6 @@ namespace LibraryAPI.Models
         public long LibrarianId { get; set; }
         [ForeignKey("BookId")]
         public long BookId { get; set; }
-        public virtual Librarian Librarian { get; set; }
         public virtual Book Book { get; set; }
     }
 }
