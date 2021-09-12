@@ -74,8 +74,6 @@ namespace LibraryAPI
                 endpoints.MapControllers();
             });
         }
-
-
     }
 
 }
