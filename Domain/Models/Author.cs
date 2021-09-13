@@ -10,7 +10,7 @@ namespace LibraryAPI.Domain.Models
         public string FirstName { get; set; }
         public string? LastName { get; set; }
         [DisplayFormat(NullDisplayText = "No books")]
-        public ICollection<Book> Books { get; set; }
+        public virtual ICollection<Book> Books { get; set; }
         public string FullName
         {
             get

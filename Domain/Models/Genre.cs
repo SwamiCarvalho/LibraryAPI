@@ -9,6 +9,6 @@ namespace LibraryAPI.Domain.Models
         public long GenreId { get; set; }
         public string Name { get; set; }
         [DisplayFormat(NullDisplayText = "No books")]
-        public ICollection<Book> Books { get; set; }
+        public virtual ICollection<Book> Books { get; set; }
     }
 }
